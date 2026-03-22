@@ -1,5 +1,7 @@
 package Frontend;
 
+import Frontend.Screens.TitleScreen;
+
 import javax.swing.JPanel;
 import java.awt.*;
 
@@ -18,6 +20,8 @@ public class GameScreenManager extends JPanel {
         layout = new CardLayout();
 
         setLayout(layout);
+
+        add(new TitleScreen(this), "TITLE"); // add the title screen
 
     }
 
