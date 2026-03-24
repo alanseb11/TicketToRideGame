@@ -1,5 +1,6 @@
 package Frontend.Screens;
 
+import Backend.Player;
 import Frontend.GameScreenManager;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ public class ColourSelectScreen extends JPanel {
 
     private Image background;
 
-    public ColourSelectScreen(GameScreenManager gsm){
+    public ColourSelectScreen(GameScreenManager gsm, Player player1, Player player2) {
         URL imageLocation = TitleScreen.class.getResource("/Frontend/Images/TitleScreenImg.jpg");
         this.background = new ImageIcon(imageLocation).getImage();
 
@@ -29,7 +30,12 @@ public class ColourSelectScreen extends JPanel {
         JButton confirmButton = new JButton("Confirm");
         confirmButton.setPreferredSize(new Dimension(100, 50));
         confirmButton.setFocusable(false);
-
+        confirmButton.addActionListener(e -> {
+            player1.setColour(colourSelector1.getSelectedItem().toString());
+            player2.setColour(colourSelector2.getSelectedItem().toString());
+            System.out.println(player1.getColour());
+            System.out.println(player2.getColour());
+        });
         setLayout(new GridBagLayout()); // set layout of whole page to border to position things
 
         // create panel to store all colour options

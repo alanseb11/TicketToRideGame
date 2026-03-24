@@ -1,5 +1,6 @@
 package Frontend;
 
+import Backend.Player;
 import Frontend.Screens.ColourSelectScreen;
 import Frontend.Screens.TitleScreen;
 
@@ -17,13 +18,13 @@ public class GameScreenManager extends JPanel {
     /**
      * Constructor for the GameScreenManager(), which manages the screens of the game
      */
-    public GameScreenManager() {
+    public GameScreenManager(Player player1, Player player2) {
         layout = new CardLayout();
 
         setLayout(layout);
 
         add(new TitleScreen(this), "TITLE"); // add the title screen
-        add(new ColourSelectScreen(this), "COLOURSELECT");// add the colour select screen
+        add(new ColourSelectScreen(this, player1, player2), "COLOURSELECT");// add the colour select screen
 
     }
 
