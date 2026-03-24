@@ -1,5 +1,6 @@
 package Frontend;
 
+import Frontend.Screens.ColourSelectScreen;
 import Frontend.Screens.TitleScreen;
 
 import javax.swing.JPanel;
@@ -22,6 +23,7 @@ public class GameScreenManager extends JPanel {
         setLayout(layout);
 
         add(new TitleScreen(this), "TITLE"); // add the title screen
+        add(new ColourSelectScreen(this), "COLOURSELECT");// add the colour select screen
 
     }
 

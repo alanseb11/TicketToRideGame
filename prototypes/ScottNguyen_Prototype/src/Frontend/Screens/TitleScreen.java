@@ -17,6 +17,10 @@ public class TitleScreen extends JPanel{
 
         startButton = new JButton("Start");
         startButton.setPreferredSize(new Dimension(100, 50));
+        startButton.setFocusable(false);
+        startButton.addActionListener(e -> {
+            gsm.showScreen("COLOURSELECT");
+        });
         URL imageLocation = TitleScreen.class.getResource("/Frontend/Images/TitleScreenImg.jpg");
         this.background = new ImageIcon(imageLocation).getImage();
 
