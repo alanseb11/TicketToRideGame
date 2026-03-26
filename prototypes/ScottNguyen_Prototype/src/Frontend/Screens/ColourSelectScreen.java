@@ -33,8 +33,8 @@ public class ColourSelectScreen extends JPanel {
         confirmButton.addActionListener(e -> {
             player1.setColour(colourSelector1.getSelectedItem().toString());
             player2.setColour(colourSelector2.getSelectedItem().toString());
-            System.out.println(player1.getColour());
-            System.out.println(player2.getColour());
+            System.out.println("Player 1 Colour:" + player1.getColour());
+            System.out.println("Player 2 Colour:" +player2.getColour());
         });
         setLayout(new GridBagLayout()); // set layout of whole page to border to position things
 
