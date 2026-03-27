@@ -6,7 +6,6 @@
       <sourceFolder url="file://$MODULE_DIR$/prototypes/AlanSebastian_Prototype/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/prototypes/ScottNguyen_Prototype/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/prototypes/NeilPereira_Prototype/src" isTestSource="false" />
-      <excludeFolder url="file://$MODULE_DIR$/prototypes/ScottNguyen_Prototype" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
