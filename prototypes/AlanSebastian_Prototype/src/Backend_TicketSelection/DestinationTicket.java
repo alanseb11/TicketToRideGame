@@ -11,18 +11,6 @@ public class DestinationTicket {
         this.points = points;
     }
 
-    public String getStartCity() {
-        return startCity;
-    }
-
-    public String getDestinationCity() {
-        return destinationCity;
-    }
-
-    public int getPoints() {
-        return points;
-    }
-
     @Override
     public String toString() {
         return startCity + " to " + destinationCity + " (" + points + " points)";
