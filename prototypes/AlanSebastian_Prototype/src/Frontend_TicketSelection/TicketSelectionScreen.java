@@ -5,19 +5,25 @@ import Backend_TicketSelection.DestinationTicket;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class TicketSelectionScreen extends JPanel {
 
-    private final JLabel resultLabel;
+    private JLabel resultLabel;
+    private Image background;
 
     public TicketSelectionScreen() {
         setLayout(new BorderLayout());
-        setBackground(new Color(244, 239, 229));
+
+        URL imageLocation = getClass().getResource("/Frontend_TicketSelection/images/train_background.jpg");
+        if (imageLocation != null) {
+            background = new ImageIcon(imageLocation).getImage();
+        }
 
         JLabel titleLabel = new JLabel("Ticket to Ride - Destination Ticket Selection", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 28));
-        titleLabel.setForeground(new Color(70, 40, 20));
+        titleLabel.setForeground(Color.BLACK);
         titleLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
         add(titleLabel, BorderLayout.NORTH);
 
@@ -33,29 +39,30 @@ public class TicketSelectionScreen extends JPanel {
         ticketBox2.setOpaque(false);
         ticketBox3.setOpaque(false);
 
+        ticketBox1.setForeground(Color.BLACK);
+        ticketBox2.setForeground(Color.BLACK);
+        ticketBox3.setForeground(Color.BLACK);
+
+        ticketBox1.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        ticketBox2.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        ticketBox3.setFont(new Font("SansSerif", Font.PLAIN, 18));
+
         JLabel instructionLabel = new JLabel("Select destination tickets to keep. You must keep at least 2.");
-        instructionLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
+        instructionLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
+        instructionLabel.setForeground(Color.BLACK);
 
         JButton confirmButton = new JButton("Confirm Selection");
-        confirmButton.setFocusPainted(false);
-        confirmButton.setPreferredSize(new Dimension(180, 45));
-        confirmButton.setBackground(new Color(170, 55, 40));
-        confirmButton.setForeground(Color.WHITE);
-        confirmButton.setFont(new Font("SansSerif", Font.BOLD, 15));
-
         JButton resetButton = new JButton("Reset");
-        resetButton.setFocusPainted(false);
-        resetButton.setPreferredSize(new Dimension(120, 45));
-        resetButton.setFont(new Font("SansSerif", Font.BOLD, 15));
 
-        resultLabel = new JLabel("<html><b>Waiting for selection...</b></html>");
+        resultLabel = new JLabel("Waiting for selection...");
         resultLabel.setFont(new Font("SansSerif", Font.PLAIN, 16));
+        resultLabel.setForeground(Color.BLACK);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
-        centerPanel.setBackground(new Color(255, 250, 242));
+        centerPanel.setBackground(new Color(255, 255, 255, 220));
         centerPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(170, 140, 110), 2),
+                BorderFactory.createLineBorder(Color.BLACK, 2),
                 new EmptyBorder(30, 40, 30, 40)
         ));
 
@@ -65,7 +72,7 @@ public class TicketSelectionScreen extends JPanel {
         ticketBox3.setAlignmentX(Component.CENTER_ALIGNMENT);
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        JPanel buttonPanel = new JPanel();
         buttonPanel.setOpaque(false);
         buttonPanel.add(confirmButton);
         buttonPanel.add(resetButton);
@@ -102,7 +109,8 @@ public class TicketSelectionScreen extends JPanel {
             }
 
             if (selectedTickets.size() < 2) {
-                resultLabel.setText("<html><font color='red'><b>Invalid selection:</b> You must keep at least 2 destination tickets.</font></html>");
+                resultLabel.setText("Invalid selection: You must keep at least 2 destination tickets.");
+                resultLabel.setForeground(Color.RED);
                 return;
             }
 
@@ -114,7 +122,9 @@ public class TicketSelectionScreen extends JPanel {
                 }
             }
 
-            resultLabel.setText("<html><font color='green'><b>Tickets kept:</b> " + keptTickets + "</font></html>");
+            resultLabel.setText("Tickets kept: " + keptTickets);
+            resultLabel.setForeground(new Color(0, 120, 0));
+
             System.out.println("Tickets kept: " + keptTickets);
         });
 
@@ -122,7 +132,16 @@ public class TicketSelectionScreen extends JPanel {
             ticketBox1.setSelected(false);
             ticketBox2.setSelected(false);
             ticketBox3.setSelected(false);
-            resultLabel.setText("<html><b>Waiting for selection...</b></html>");
+            resultLabel.setText("Waiting for selection...");
+            resultLabel.setForeground(Color.BLACK);
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        if (background != null) {
+            g.drawImage(background, 0, 0, getWidth(), getHeight(), this);
+        }
     }
 }
