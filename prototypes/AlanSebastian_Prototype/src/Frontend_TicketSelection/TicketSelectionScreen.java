@@ -15,7 +15,7 @@ public class TicketSelectionScreen extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(244, 239, 229));
 
-        JLabel titleLabel = new JLabel("Ticket to Ride - Destination Ticket Selection Prototype", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Ticket to Ride - Destination Ticket Selection", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Serif", Font.BOLD, 28));
         titleLabel.setForeground(new Color(70, 40, 20));
         titleLabel.setBorder(new EmptyBorder(20, 10, 20, 10));
