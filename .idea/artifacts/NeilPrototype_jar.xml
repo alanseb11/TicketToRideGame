@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="NeilPrototype:jar">
+    <output-path>$PROJECT_DIR$/prototypes/NeilPereira_Prototype</output-path>
+    <root id="archive" name="FIT3077.jar">
+      <element id="module-output" name="FIT3077" />
+    </root>
+  </artifact>
+</component>
