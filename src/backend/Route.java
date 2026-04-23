@@ -4,15 +4,15 @@ public class Route{
 
     private String colour;
 
-    private String cityA;
+    private City cityA;
 
-    private String cityB;
+    private City cityB;
 
     private int length;
 
     private Player owner = null;
 
-    public Route(String colour, String cityA, String cityB, int length) {
+    public Route(String colour, City cityA, City cityB, int length) {
         this.colour = colour;
         this.cityA = cityA;
         this.cityB = cityB;
