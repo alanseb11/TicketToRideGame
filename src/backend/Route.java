@@ -1,8 +1,10 @@
 package backend;
 
+import java.util.HashMap;
+
 public class Route{
 
-    private String colour;
+    private Colour colour;
 
     private City cityA;
 
@@ -12,7 +14,7 @@ public class Route{
 
     private Player owner = null;
 
-    public Route(String colour, City cityA, City cityB, int length) {
+    public Route(Colour colour, City cityA, City cityB, int length) {
         this.colour = colour;
         this.cityA = cityA;
         this.cityB = cityB;
@@ -45,20 +47,35 @@ public class Route{
      * @return a boolean determining if they can claim or not
      */
     public boolean canPlayerClaim(Player player) {
-        int cardCount = 0;
-        TransportCard[] transportCards = player.getTransportCards();
-        for (int i = 0; i <= transportCards.length; i++) {
-            if (transportCards[i].getColour() == this.colour) {
-                cardCount++;
-            }
-        }
+        // Get Player's transportation cards
+        HashMap<Colour, Integer> transportCards = player.getTransportCards();
 
-        if (cardCount >= this.length) {
+        // Get number of cards Player has matching the route's colour
+        Integer numCards = transportCards.get(colour);
+
+        // If enough, then can claim
+        if (numCards >= this.length) {
             return true;
         } else {
             return false;
         }
     }
 
+    /**
+     * Getter method for Route colour
+     *
+     * @return the Route's colour
+     */
+    public Colour getColour() {
+        return colour;
+    }
 
+    /**
+     * Getter method for Route length
+     *
+     * @return the Route's length
+     */
+    public int getLength() {
+        return length;
+    }
 }
