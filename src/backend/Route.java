@@ -14,11 +14,14 @@ public class Route{
 
     private Player owner = null;
 
-    public Route(Colour colour, City cityA, City cityB, int length) {
+    private Route doubleRoute;
+
+    public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
         this.colour = colour;
         this.cityA = cityA;
         this.cityB = cityB;
         this.length = length;
+        this.doubleRoute = doubleRoute;
     }
 
     /**
@@ -53,12 +56,20 @@ public class Route{
         // Get number of cards Player has matching the route's colour
         Integer numCards = transportCards.get(colour);
 
-        // If enough, then can claim
-        if (numCards >= this.length) {
-            return true;
-        } else {
-            return false;
+        // If not enough same colour cards, check if the multicolour cards can be used
+        if (numCards < length) {
+            numCards += transportCards.get(Colour.MULTI);
         }
+
+        // If enough same colour cards and buses, then can claim
+        if (doubleRoute != null) {
+            // If a double route exists, can claim if the other route has not been claimed
+            return numCards >= this.length && doubleRoute.owner == null &&
+                    player.getBuses() >= this.length;
+        } else {
+            return numCards >= this.length && player.getBuses() >= this.length;
+        }
+
     }
 
     /**
@@ -86,4 +97,6 @@ public class Route{
     public City getCityB() {
         return cityB;
     }
+
+
 }

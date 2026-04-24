@@ -68,8 +68,22 @@ public class Player {
         // Get route colour
         Colour routeColour = route.getColour();
 
-        // Decrement number of cards of that colour in Player's hand by the route length
-        transportCards.put(routeColour, transportCards.get(routeColour) - route.getLength());
+        // Get difference between route length and same colour cards held by Player
+        int cardRouteDiff = route.getLength() - transportCards.get(routeColour);
+
+        // If enough same colour cards
+        if  (cardRouteDiff <= 0) {
+            // Decrement number of cards of that colour in Player's hand by the route length
+            transportCards.put(routeColour, transportCards.get(routeColour) - route.getLength());
+        } else if (cardRouteDiff == route.getLength()) {
+            // If player wants to claim route using all multicoloured cards
+            transportCards.put(routeColour, transportCards.get(Colour.MULTI) - route.getLength());
+        } else {
+            // If it needs to use multi colour cards with same colour,set same coloured cards to 0,
+            // and reduce the multi colour card count
+            transportCards.put(routeColour, 0);
+            transportCards.put(Colour.MULTI, cardRouteDiff);
+        }
 
         // Decrement number of buses by the route length
         this.buses -= route.getLength();
@@ -153,5 +167,14 @@ public class Player {
      */
     public HashMap<City, ArrayList<Route>> getPlayerRoutes() {
         return routesClaimed;
+    }
+
+    /**
+     * Getter method to get Player buses
+     *
+     * @return number of buses player is holding
+     */
+    public int getBuses() {
+        return buses;
     }
 }
