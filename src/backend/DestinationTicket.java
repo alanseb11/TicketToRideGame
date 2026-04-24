@@ -82,4 +82,13 @@ public class DestinationTicket {
         return false;
 
     }
+
+    /**
+     * Getter method for the points of this Destination Ticket
+     *
+     * @return points of the Destination Ticket
+     */
+    public int getPoints() {
+        return points;
+    }
 }

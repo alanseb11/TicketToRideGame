@@ -21,7 +21,7 @@ public class Player {
 
     private int longestPath = 0;
 
-    private DestinationTicket[] destTicketCards;
+    private ArrayList<DestinationTicket> destTicketCards;
 
     private HashMap<Colour, Integer> transportCards;
 
@@ -76,7 +76,7 @@ public class Player {
         if  (cardRouteDiff <= 0) {
             // Decrement number of cards of that colour in Player's hand by the route length
             transportCards.put(routeColour, transportCards.get(routeColour) - route.getLength());
-        } else if (cardRouteDiff == route.getLength()) {
+        } else if (transportCards.get(routeColour) == 0){
             // If player wants to claim route using all multicoloured cards
             transportCards.put(routeColour, transportCards.get(Colour.MULTI) - route.getLength());
         } else {
@@ -91,8 +91,27 @@ public class Player {
 
         // Increase player points according to route length
         this.points += route.calculatePoints();
+
+        // Add the route to Player's claimed routes adjacency list
+        routesClaimed.get(route.getCityA()).add(route);
+        routesClaimed.get(route.getCityB()).add(route);
     }
 
+
+    /**
+     * Method that goes through each Destination Ticket card Player is holding
+     * and adds/decreases points based on if they have connected the cities or not
+     */
+    public void calcDestTickets() {
+        for (DestinationTicket destTicket: destTicketCards) {
+            int destTickerPts = destTicket.getPoints();
+            if (destTicket.checkPlayerConnect(this)) {
+                points += destTickerPts;
+            } else {
+                points -= destTickerPts;
+            }
+        }
+    }
     /**
      * Method that calculates the longest continuous path from Player's
      * claimed routes. Calls dfs method on all cities to cover all possible start points.
@@ -151,6 +170,8 @@ public class Player {
             visitedRoutes.remove(route);
         }
     }
+
+
 
     /**
      * Getter method for Player transportation cards held
