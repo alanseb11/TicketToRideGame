@@ -21,7 +21,7 @@ public class Player {
 
     private int longestPath = 0;
 
-    private DestinationTicketCard[] destTicketCards;
+    private DestinationTicket[] destTicketCards;
 
     private HashMap<Colour, Integer> transportCards;
 
@@ -65,6 +65,7 @@ public class Player {
      * @param route - route to be claimed
      */
     public void claimRoute(Route route) {
+
         // Get route colour
         Colour routeColour = route.getColour();
 
