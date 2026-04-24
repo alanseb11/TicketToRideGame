@@ -78,4 +78,12 @@ public class Route{
     public int getLength() {
         return length;
     }
+
+    public City getCityA() {
+        return cityA;
+    }
+
+    public City getCityB() {
+        return cityB;
+    }
 }

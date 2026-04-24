@@ -3,6 +3,7 @@ package backend;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Player in the game
@@ -17,6 +18,8 @@ public class Player {
     private int buses = 17;
 
     private int points = 0;
+
+    private int longestPath = 0;
 
     private DestinationTicketCard[] destTicketCards;
 
@@ -73,6 +76,65 @@ public class Player {
 
         // Increase player points according to route length
         this.points += route.calculatePoints();
+    }
+
+    /**
+     * Method that calculates the longest continuous path from Player's
+     * claimed routes. Calls dfs method on all cities to cover all possible start points.
+     */
+    public void calcLongestPath() {
+        for (City city: routesClaimed.keySet()) {
+            dfs(city, new ArrayList<>(), 0);
+        }
+    }
+
+
+    /**
+     * Method to calculate longest continous path from a City. Uses DFS + Backtracking
+     * for an exhaustive search of the graph formed by Player's claimed routes.
+     *
+     * @param city - the city to calculate the path from
+     * @param visitedRoutes - stores routes visited in calculations, to prevent repeating it
+     * @param currentPathLen - the length of the calculated path
+     *
+     * GenAI Declaration:
+     * GenAI was used to assist with the structure of the algorithm. I used ChatGPT-5 to
+     * get an algorithm to find the weight of the longest path in an undirected graph.
+     * I then used its output and adapted it to the way Routes are stored.
+     */
+    public void dfs(City city, List<Route> visitedRoutes, int currentPathLen) {
+
+        longestPath = Math.max(longestPath, currentPathLen);
+
+        for (Route route : routesClaimed.get(city)) {
+
+            //Check if route has been visited
+            if  (visitedRoutes.contains(route)) {
+                //If it has, then skip
+                continue;
+            }
+
+            City nextCity;
+
+            // Next city to visit is the other city in the route
+            if (route.getCityA().equals(city)) {
+                nextCity = route.getCityB();
+            } else {
+                nextCity = route.getCityA();
+            }
+
+            // Get route length
+            int length = route.getLength();
+
+            //Mark current route as visited
+            visitedRoutes.add(route);
+
+            //Recursive call on city
+            dfs(nextCity, visitedRoutes, currentPathLen + length);
+
+            // Remove the route from visited to allow for backtracking
+            visitedRoutes.remove(route);
+        }
     }
 
     /**
