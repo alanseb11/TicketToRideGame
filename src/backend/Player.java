@@ -106,6 +106,7 @@ public class Player {
         for (DestinationTicket destTicket: destTicketCards) {
             int destTickerPts = destTicket.getPoints();
             if (destTicket.checkPlayerConnect(this)) {
+                numDestTicketCompleted++;
                 points += destTickerPts;
             } else {
                 points -= destTickerPts;
@@ -198,5 +199,46 @@ public class Player {
      */
     public int getBuses() {
         return buses;
+    }
+
+    /**
+     * Getter method to get Player's longest path
+     *
+     * @return the longest path of player
+     */
+    public int getLongestPath() {
+        return longestPath;
+    }
+
+    /**
+     * Method to add points to player
+     *
+     * @param points - points to add
+     */
+    public void addPoints(int points) {
+        this.points += points;
+    }
+
+    /**
+     * Method to add points to player
+     *
+     * @param points - points to take away
+     */
+    public void takePoints(int points) {
+        this.points += points;
+    }
+
+    /**
+     * Method to get points
+     */
+    public int getPoints() {
+        return points;
+    }
+
+    /**
+     * Getter metho to get number of completed destination tickets
+     */
+    public int getCompletedDestTickets() {
+        return numDestTicketCompleted;
     }
 }
