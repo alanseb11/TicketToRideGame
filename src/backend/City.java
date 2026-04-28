@@ -1,0 +1,26 @@
+package backend;
+
+/**
+ * Enum values for Citirs
+ */
+public enum City{
+    BAKER_STREET,
+    BIG_BEN,
+    BUCKINGHAM_PALACE,
+    BRICK_LANE,
+    BRITISH_MUSEUM,
+    COVENT_GARDEN,
+    ELEPHANT_CASTLE,
+    GLOBE_THEATRE,
+    HYDE_PARK,
+    KINGS_CROSS,
+    PICCADILLY_CIRCUS,
+    REGENTS_PARK,
+    ST_PAULS,
+    THE_CHARTERHOUSE,
+    TOWER_OF_LONDON,
+    TRAFALGAR_SQUARE,
+    WATERLOO
+
+
+}

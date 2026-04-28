@@ -1,22 +1,27 @@
 package backend;
 
+import java.util.HashMap;
+
 public class Route{
 
-    private String colour;
+    private Colour colour;
 
-    private String cityA;
+    private City cityA;
 
-    private String cityB;
+    private City cityB;
 
     private int length;
 
     private Player owner = null;
 
-    public Route(String colour, String cityA, String cityB, int length) {
+    private Route doubleRoute;
+
+    public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
         this.colour = colour;
         this.cityA = cityA;
         this.cityB = cityB;
         this.length = length;
+        this.doubleRoute = doubleRoute;
     }
 
     /**
@@ -45,19 +50,52 @@ public class Route{
      * @return a boolean determining if they can claim or not
      */
     public boolean canPlayerClaim(Player player) {
-        int cardCount = 0;
-        TransportCard[] transportCards = player.getTransportCards();
-        for (int i = 0; i <= transportCards.length; i++) {
-            if (transportCards[i].getColour() == this.colour) {
-                cardCount++;
-            }
+        // Get Player's transportation cards
+        HashMap<Colour, Integer> transportCards = player.getTransportCards();
+
+        // Get number of cards Player has matching the route's colour
+        Integer numCards = transportCards.get(colour);
+
+        // If not enough same colour cards, check if the multicolour cards can be used
+        if (numCards < length) {
+            numCards += transportCards.get(Colour.MULTI);
         }
 
-        if (cardCount >= this.length) {
-            return true;
+        // If enough same colour cards and buses, then can claim
+        if (doubleRoute != null) {
+            // If a double route exists, can claim if the other route has not been claimed
+            return numCards >= this.length && doubleRoute.owner == null &&
+                    player.getBuses() >= this.length;
         } else {
-            return false;
+            return numCards >= this.length && player.getBuses() >= this.length;
         }
+
+    }
+
+    /**
+     * Getter method for Route colour
+     *
+     * @return the Route's colour
+     */
+    public Colour getColour() {
+        return colour;
+    }
+
+    /**
+     * Getter method for Route length
+     *
+     * @return the Route's length
+     */
+    public int getLength() {
+        return length;
+    }
+
+    public City getCityA() {
+        return cityA;
+    }
+
+    public City getCityB() {
+        return cityB;
     }
 
 
