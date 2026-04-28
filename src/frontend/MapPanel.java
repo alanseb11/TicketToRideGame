@@ -1,15 +1,12 @@
 package frontend;
 
+import backend.City;
+import backend.Colour;
 import backend.Player;
 import backend.Route;
 
 import javax.swing.JPanel;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 
 public class MapPanel extends JPanel {
 
@@ -21,38 +18,33 @@ public class MapPanel extends JPanel {
     }
 
     private void createRouteVisuals() {
-        // test players
         Player p1 = new Player("Player 1", "blue");
-        Player p2 = new Player("Player 2", "red");
+        Player p2 = new Player("Player 2", "green");
 
-        // Route 1: Hyde Park -> Baker Street
-        Route route1 = new Route("black", "Hyde Park", "Baker Street", 4);
+        Route route1 = new Route(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4, null);
 
-        Rectangle[] route1Segments = new Rectangle[] {
+        Rectangle[] route1Segments = {
                 new Rectangle(120, 520, 32, 14),
                 new Rectangle(150, 490, 32, 14),
                 new Rectangle(180, 460, 32, 14),
                 new Rectangle(210, 430, 32, 14)
         };
 
-        // Route 2: Baker Street -> British Museum
-        Route route2 = new Route("red", "Baker Street", "British Museum", 3);
+        Route route2 = new Route(Colour.GREEN, City.BAKER_STREET, City.BRITISH_MUSEUM, 3, null);
 
-        Rectangle[] route2Segments = new Rectangle[] {
+        Rectangle[] route2Segments = {
                 new Rectangle(210, 300, 32, 14),
                 new Rectangle(250, 310, 32, 14),
                 new Rectangle(290, 320, 32, 14)
         };
 
-        // Route 3: Waterloo -> Elephant & Castle
-        Route route3 = new Route("orange", "Waterloo", "Elephant & Castle", 2);
+        Route route3 = new Route(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 2, null);
 
-        Rectangle[] route3Segments = new Rectangle[] {
+        Rectangle[] route3Segments = {
                 new Rectangle(430, 500, 32, 14),
                 new Rectangle(470, 530, 32, 14)
         };
 
-        // test ownership
         route1.setOwner(p1);
         route2.setOwner(p2);
 
@@ -76,64 +68,60 @@ public class MapPanel extends JPanel {
     private void drawRoutes(Graphics2D g2) {
         for (RouteVisual routeVisual : routeVisuals) {
             Route route = routeVisual.getRoute();
-            Rectangle[] segments = routeVisual.getSegments();
-
             Color drawColor = getDrawColor(route);
 
-            for (Rectangle segment : segments) {
+            for (Rectangle segment : routeVisual.getSegments()) {
                 g2.setColor(drawColor);
                 g2.fillRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
 
                 g2.setColor(Color.WHITE);
                 g2.drawRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
 
-                // Draw owner text if claimed
                 if (route.getOwner() != null) {
                     g2.setFont(new Font("Arial", Font.BOLD, 10));
                     g2.setColor(Color.WHITE);
-                    String label = getPlayerLabel(route.getOwner().getName());
-                    g2.drawString(label, segment.x + 8, segment.y + 10);
+                    g2.drawString(getPlayerLabel(route.getOwner().getName()), segment.x + 8, segment.y + 10);
                 }
             }
         }
-    }
-
-    private String getPlayerLabel(String playerName) {
-        if (playerName.equalsIgnoreCase("Player 1")) {
-            return "P1";
-        } else if (playerName.equalsIgnoreCase("Player 2")) {
-            return "P2";
-        }
-        return "P";
     }
 
     private Color getDrawColor(Route route) {
         if (route.getOwner() != null) {
             return convertStringToColor(route.getOwner().getColour());
         }
-        return convertStringToColor(route.getColour());
+
+        return convertColourToAwtColor(route.getColour());
+    }
+
+    private String getPlayerLabel(String playerName) {
+        if (playerName.equalsIgnoreCase("Player 1")) return "P1";
+        if (playerName.equalsIgnoreCase("Player 2")) return "P2";
+        return "P";
+    }
+
+    private Color convertColourToAwtColor(Colour colour) {
+        switch (colour) {
+            case GREEN: return Color.GREEN;
+            case YELLOW: return Color.YELLOW;
+            case ORANGE: return Color.ORANGE;
+            case PINK: return Color.PINK;
+            case BLACK: return Color.BLACK;
+            case MULTI: return Color.LIGHT_GRAY;
+            default: return Color.GRAY;
+        }
     }
 
     private Color convertStringToColor(String colour) {
         switch (colour.toLowerCase()) {
-            case "red":
-                return Color.RED;
-            case "blue":
-                return Color.BLUE;
-            case "green":
-                return Color.GREEN;
-            case "yellow":
-                return Color.YELLOW;
-            case "black":
-                return Color.BLACK;
-            case "orange":
-                return Color.ORANGE;
-            case "pink":
-                return Color.PINK;
-            case "white":
-                return Color.LIGHT_GRAY;
-            default:
-                return Color.GRAY;
+            case "blue": return Color.BLUE;
+            case "green": return Color.GREEN;
+            case "red": return Color.RED;
+            case "yellow": return Color.YELLOW;
+            case "black": return Color.BLACK;
+            case "orange": return Color.ORANGE;
+            case "pink": return Color.PINK;
+            default: return Color.GRAY;
         }
     }
 }
