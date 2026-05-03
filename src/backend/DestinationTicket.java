@@ -91,4 +91,12 @@ public class DestinationTicket {
     public int getPoints() {
         return points;
     }
+
+    public City getCityA() {
+        return cityA;
+    }
+
+    public City getCityB() {
+        return cityB;
+    }
 }

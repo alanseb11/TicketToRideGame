@@ -34,6 +34,7 @@ public class Player {
         this.colour = colour;
         transportCards = new HashMap<>();
         routesClaimed = new HashMap<>();
+        destTicketCards = new ArrayList<>();
 
         // TEMPORARY CITIES - TODO: NEED TO MOVE INTO GAME CLASS WHEN MADE
         City[] cities = {City.BAKER_STREET, City.COVENT_GARDEN, City.PICCADILLY_CIRCUS, City.BIG_BEN,
@@ -248,5 +249,9 @@ public class Player {
 
     public String getColour() {
         return colour;
+    }
+
+    public ArrayList<DestinationTicket> getDestTicketCards() {
+        return destTicketCards;
     }
 }

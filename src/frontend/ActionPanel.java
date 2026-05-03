@@ -9,11 +9,13 @@ public class ActionPanel extends JPanel {
 
     private final GameController controller;
     private final MapPanel mapPanel;
+    private final PlayerInfoPanel playerInfoPanel;
     private final JLabel messageLabel;
 
-    public ActionPanel(GameController controller, MapPanel mapPanel) {
+    public ActionPanel(GameController controller, MapPanel mapPanel, PlayerInfoPanel playerInfoPanel) {
         this.controller = controller;
         this.mapPanel = mapPanel;
+        this.playerInfoPanel = playerInfoPanel;
 
         setLayout(new FlowLayout());
 
@@ -54,5 +56,6 @@ public class ActionPanel extends JPanel {
     public void refresh() {
         messageLabel.setText(controller.getMessage());
         mapPanel.repaint();
+        playerInfoPanel.refresh();
     }
 }
