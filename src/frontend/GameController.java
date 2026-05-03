@@ -1,7 +1,6 @@
 package frontend;
 
-import backend.Player;
-import backend.Route;
+import backend.*;
 
 public class GameController {
 
@@ -83,23 +82,77 @@ public class GameController {
     public void drawTransportCard() {
         Player currentPlayer = getCurrentPlayer();
 
-        // Temporary frontend behaviour until Deck is connected.
-        // This gives the current player one wildcard card.
-        currentPlayer.getTransportCards().put(
-                backend.Colour.MULTI,
-                currentPlayer.getTransportCards().get(backend.Colour.MULTI) + 1
-        );
+        Colour[] drawableColours = {
+                Colour.GREEN,
+                Colour.BLUE,
+                Colour.YELLOW,
+                Colour.ORANGE,
+                Colour.PINK,
+                Colour.BLACK,
+                Colour.MULTI
+        };
 
-        message = currentPlayer.getName() + " drew a transport card.";
+        int randomIndex = (int) (Math.random() * drawableColours.length);
+        Colour drawnColour = drawableColours[randomIndex];
+
+        int currentAmount = currentPlayer.getTransportCards().getOrDefault(drawnColour, 0);
+
+        currentPlayer.getTransportCards().put(drawnColour, currentAmount + 1);
+
+        message = currentPlayer.getName() + " drew a " + drawnColour + " transport card.";
+
         endTurn();
     }
 
     public void drawDestinationTicket() {
         Player currentPlayer = getCurrentPlayer();
 
-        // Temporary placeholder until Destination Ticket deck is connected.
-        message = currentPlayer.getName() + " drew destination tickets.";
+        // Simple hardcoded ticket pool (you can expand later)
+        DestinationTicket[] tickets = {
+                new DestinationTicket(City.HYDE_PARK, City.BAKER_STREET, 5),
+                new DestinationTicket(City.KINGS_CROSS, City.BRICK_LANE, 4),
+                new DestinationTicket(City.WATERLOO, City.ELEPHANT_CASTLE, 3),
+                new DestinationTicket(City.BIG_BEN, City.BUCKINGHAM_PALACE, 2),
+                new DestinationTicket(City.ST_PAULS, City.TOWER_OF_LONDON, 4),
+                new DestinationTicket(City.TRAFALGAR_SQUARE, City.COVENT_GARDEN, 2)
+        };
+
+        int randomIndex = (int) (Math.random() * tickets.length);
+        DestinationTicket drawnTicket = tickets[randomIndex];
+
+        // add to player
+        currentPlayer.getDestTicketCards().add(drawnTicket);
+
+        message = currentPlayer.getName() + " drew a destination ticket: "
+                + drawnTicket.getCityA() + " → " + drawnTicket.getCityB();
+
         endTurn();
+    }
+
+    private void dealStartingCards() {
+        for (Player player : players) {
+            for (int i = 0; i < 4; i++) {
+                giveRandomTransportCard(player);
+            }
+        }
+    }
+
+    private void giveRandomTransportCard(Player player) {
+        Colour[] drawableColours = {
+                Colour.GREEN,
+                Colour.BLUE,
+                Colour.YELLOW,
+                Colour.ORANGE,
+                Colour.PINK,
+                Colour.BLACK,
+                Colour.MULTI
+        };
+
+        int randomIndex = (int) (Math.random() * drawableColours.length);
+        Colour drawnColour = drawableColours[randomIndex];
+
+        int currentAmount = player.getTransportCards().getOrDefault(drawnColour, 0);
+        player.getTransportCards().put(drawnColour, currentAmount + 1);
     }
 
     public void endTurn() {
