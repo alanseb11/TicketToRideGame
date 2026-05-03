@@ -241,7 +241,25 @@ public class TransportationDeck extends Deck<TransportCard> {
                         toDeck(card);
                     }
                     faceUpCards.clear();
-                    fillFaceUpRow();
+                    for (int i = 0; i < 5; i++) {
+                        TransportCard card = draw();
+                        if (card != null) {
+                            faceUpCards.add(card);
+                        }
+                    }
+
+                    while (checkThreeBuses() && !(cards.isEmpty() && discardPile.isEmpty())) {
+                        for (TransportCard card : faceUpCards) {
+                            toDeck(card);
+                        }
+                        faceUpCards.clear();
+                        for (int i = 0; i < 5; i++) {
+                            TransportCard card = draw();
+                            if (card != null) {
+                                faceUpCards.add(card);
+                            }
+                        }
+                    }
                 }
 
                 if (isBus) {
