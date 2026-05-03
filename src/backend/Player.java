@@ -241,4 +241,12 @@ public class Player {
     public int getCompletedDestTickets() {
         return numDestTicketCompleted;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColour() {
+        return colour;
+    }
 }
