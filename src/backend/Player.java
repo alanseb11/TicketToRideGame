@@ -254,4 +254,23 @@ public class Player {
     public ArrayList<DestinationTicket> getDestTicketCards() {
         return destTicketCards;
     }
+
+    /**
+     * Adds a TransportCard to this player's hand.
+     *
+     * @param card the card received
+     */
+    public void addTransportCard(TransportCard card) {
+        Colour c = card.getColour();
+        transportCards.put(c, transportCards.get(c) + 1);
+    }
+
+    /**
+     * Adds a DestinationTicket to this player's hand.
+     *
+     * @param ticket the destination ticket to add
+     */
+    public void addDestinationTicket(DestinationTicket ticket) {
+        destTicketCards.add(ticket);
+    }
 }

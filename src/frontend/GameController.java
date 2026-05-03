@@ -2,6 +2,11 @@ package frontend;
 
 import backend.*;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+
 public class GameController {
 
     private Player[] players;
@@ -9,11 +14,37 @@ public class GameController {
     private Route selectedRoute;
     private String message;
 
+    private final TransportationDeck transportDeck;
+    private final DestinationTicketCardDeck ticketDeck;
+
     public GameController(Player playerOne, Player playerTwo) {
         this.players = new Player[] {playerOne, playerTwo};
         this.currentPlayerIndex = 0;
         this.selectedRoute = null;
         this.message = playerOne.getName() + "'s turn";
+
+        TransportationDeck.reset();
+        DestinationTicketCardDeck.reset();
+        transportDeck = TransportationDeck.getInstance();
+        ticketDeck    = DestinationTicketCardDeck.getInstance();
+    }
+
+    /**
+     * Deals starting hands and runs initial destination-ticket selection dialogs.
+     * Called once from GameFrame after the window is visible.
+     */
+    public void setup() {
+        for (Player player : players) {
+            transportDeck.deal(player);
+        }
+        transportDeck.turnFaceUp();
+
+        // Each player must keep at least 2 of their 3 drawn starting tickets
+        for (Player player : players) {
+            List<DestinationTicket> drawn = ticketDeck.getTickets(2, player);
+            List<Integer> kept = chooseTickets(player, drawn, 2);
+            ticketDeck.getTickets(2, player, kept);
+        }
     }
 
     public Player getCurrentPlayer() {
@@ -80,60 +111,100 @@ public class GameController {
     }
 
     public void drawTransportCard() {
-        Player currentPlayer = getCurrentPlayer();
+        Player current = getCurrentPlayer();
+        List<TransportCard> faceUp = transportDeck.getFaceUpCards();
 
-        Colour[] drawableColours = {
-                Colour.GREEN,
-                Colour.BLUE,
-                Colour.YELLOW,
-                Colour.ORANGE,
-                Colour.PINK,
-                Colour.BLACK,
-                Colour.MULTI
-        };
+        // Build option labels: one per face-up card, plus a blind-draw option
+        String[] options = new String[faceUp.size() + 1];
+        for (int i = 0; i < faceUp.size(); i++) {
+            options[i] = (i + 1) + ": " + faceUp.get(i).getName()
+                    + " (" + faceUp.get(i).getColour() + ")";
+        }
+        options[faceUp.size()] = "Draw from pile";
 
-        int randomIndex = (int) (Math.random() * drawableColours.length);
-        Colour drawnColour = drawableColours[randomIndex];
+        // First pick
+        int pick1 = JOptionPane.showOptionDialog(
+                null, "Pick first card:", "Draw Transport Cards",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                null, options, options[options.length - 1]);
+        if (pick1 < 0 || pick1 >= faceUp.size()) pick1 = faceUp.size();
+        int choice1 = (pick1 == faceUp.size()) ? -1 : pick1;
 
-        int currentAmount = currentPlayer.getTransportCards().getOrDefault(drawnColour, 0);
+        // A face-up Bus counts as both draws — skip second pick
+        boolean firstWasBus = (choice1 >= 0)
+                && faceUp.get(choice1).getColour() == Colour.MULTI;
 
-        currentPlayer.getTransportCards().put(drawnColour, currentAmount + 1);
+        int choice2 = -1; // default: blind (ignored by deck if first was a bus)
+        if (!firstWasBus) {
+            int pick2 = JOptionPane.showOptionDialog(
+                    null, "Pick second card:", "Draw Transport Cards",
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                    null, options, options[options.length - 1]);
+            if (pick2 < 0 || pick2 >= faceUp.size()) pick2 = faceUp.size();
+            choice2 = (pick2 == faceUp.size()) ? -1 : pick2;
+        }
 
-        message = currentPlayer.getName() + " drew a " + drawnColour + " transport card.";
-
+        transportDeck.draw(current, new int[]{choice1, choice2});
+        message = current.getName() + " drew transport cards.";
         endTurn();
     }
 
     public void drawDestinationTicket() {
-        Player currentPlayer = getCurrentPlayer();
+        Player current = getCurrentPlayer();
+        List<DestinationTicket> drawn = ticketDeck.getTickets(1, current);
 
-        // Simple hardcoded ticket pool (you can expand later)
-        DestinationTicket[] tickets = {
-                new DestinationTicket(City.HYDE_PARK, City.BAKER_STREET, 5),
-                new DestinationTicket(City.KINGS_CROSS, City.BRICK_LANE, 4),
-                new DestinationTicket(City.WATERLOO, City.ELEPHANT_CASTLE, 3),
-                new DestinationTicket(City.BIG_BEN, City.BUCKINGHAM_PALACE, 2),
-                new DestinationTicket(City.ST_PAULS, City.TOWER_OF_LONDON, 4),
-                new DestinationTicket(City.TRAFALGAR_SQUARE, City.COVENT_GARDEN, 2)
-        };
+        if (drawn.isEmpty()) {
+            message = "No destination tickets remaining.";
+            return;
+        }
 
-        int randomIndex = (int) (Math.random() * tickets.length);
-        DestinationTicket drawnTicket = tickets[randomIndex];
-
-        // add to player
-        currentPlayer.getDestTicketCards().add(drawnTicket);
-
-        message = currentPlayer.getName() + " drew a destination ticket: "
-                + drawnTicket.getCityA() + " → " + drawnTicket.getCityB();
-
+        List<Integer> kept = chooseTickets(current, drawn, 1);
+        ticketDeck.getTickets(1, current, kept);
+        message = current.getName() + " drew destination tickets.";
         endTurn();
     }
+
 
     private void dealStartingCards() {
         for (Player player : players) {
             for (int i = 0; i < 4; i++) {
                 giveRandomTransportCard(player);
             }
+        }
+    }
+
+    private List<Integer> chooseTickets(Player player,
+                                        List<DestinationTicket> tickets, int min) {
+        JCheckBox[] boxes = new JCheckBox[tickets.size()];
+        JPanel panel = new JPanel(new GridLayout(tickets.size() + 1, 1));
+        panel.add(new JLabel(player.getName() + " — keep at least " + min + ":"));
+
+        for (int i = 0; i < tickets.size(); i++) {
+            DestinationTicket t = tickets.get(i);
+            String label = formatCityName(t.getCityA().name())
+                    + "  →  " + formatCityName(t.getCityB().name())
+                    + "  (" + t.getPoints() + " pts)";
+            boxes[i] = new JCheckBox(label, true);
+            panel.add(boxes[i]);
+        }
+        while (true) {
+            JOptionPane.showMessageDialog(
+                    null, panel, "Destination Tickets", JOptionPane.PLAIN_MESSAGE);
+
+            List<Integer> kept = new ArrayList<>();
+            for (int i = 0; i < boxes.length; i++) {
+                if (boxes[i].isSelected()) kept.add(i);
+            }
+
+            if (kept.size() >= min) {
+                return kept;
+            }
+
+            JOptionPane.showMessageDialog(
+                    null,
+                    "You must keep at least " + min + " ticket(s).",
+                    "Invalid Selection",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
