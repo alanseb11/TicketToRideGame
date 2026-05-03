@@ -16,24 +16,6 @@ public class Route{
 
     private Route doubleRoute;
 
-    /**
-     * Sets the owner of this route when a player claims it.
-     *
-     * @param owner the player who has claimed this route
-     */
-    public void setOwner(Player owner) {
-        this.owner = owner;
-    }
-
-    /**
-     * Getter for the owner of this route.
-     *
-     * @return the player who claimed this route, or null if unclaimed
-     */
-    public Player getOwner() {
-        return owner;
-    }
-
     public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
         this.colour = colour;
         this.cityA = cityA;
