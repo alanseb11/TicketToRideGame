@@ -241,4 +241,14 @@ public class Player {
     public int getCompletedDestTickets() {
         return numDestTicketCompleted;
     }
+
+    /**
+     * Adds a DestinationTicket to this player's hand.
+     * Called by DestinationTicketCardDeck after the player selects which tickets to keep.
+     *
+     * @param ticket the destination ticket to add
+     */
+    public void addDestinationTicket(DestinationTicket ticket) {
+        destTicketCards.add(ticket);
+    }
 }
