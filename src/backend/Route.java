@@ -38,8 +38,12 @@ public class Route{
             return 4;
         } else if (this.length == 4) {
             return 7;
+        } else if (this.length == 5) {
+            return 10;
+        } else if (this.length == 6) {
+            return 15;
         } else {
-            return 0;
+                return 0;
         }
     };
 
@@ -55,7 +59,9 @@ public class Route{
 
         // Get number of cards Player has matching the route's colour
         Integer numCards = transportCards.get(colour);
-
+        if (numCards == null) {
+            numCards = 0;
+        }
         // If not enough same colour cards, check if the multicolour cards can be used
         if (numCards < length) {
             numCards += transportCards.get(Colour.MULTI);
