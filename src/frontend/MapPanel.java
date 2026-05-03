@@ -2,22 +2,43 @@ package frontend;
 
 import backend.City;
 import backend.Colour;
-import backend.Player;
 import backend.Route;
 
 import javax.swing.JPanel;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 
 public class MapPanel extends JPanel {
 
+    private final GameController controller;
     private HashMap<City, Point> cityPositions;
     private RouteVisual[] routeVisuals;
 
-    public MapPanel() {
+    public MapPanel(GameController controller) {
+        this.controller = controller;
         setBackground(new Color(230, 220, 190));
         createCityPositions();
         createRouteVisuals();
+        setupMouseListener();
+    }
+
+    private void setupMouseListener() {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for (RouteVisual routeVisual : routeVisuals) {
+                    for (Rectangle segment : routeVisual.getSegments()) {
+                        if (segment.contains(e.getPoint())) {
+                            controller.selectRoute(routeVisual.getRoute());
+                            repaint();
+                            return;
+                        }
+                    }
+                }
+            }
+        });
     }
 
     private void createCityPositions() {
@@ -43,29 +64,46 @@ public class MapPanel extends JPanel {
     }
 
     private void createRouteVisuals() {
-        RouteVisual route1 = createRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4);
-        RouteVisual route2 = createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 3);
-        RouteVisual route3 = createRouteVisual(Colour.GREEN, City.REGENTS_PARK, City.KINGS_CROSS, 4);
-        RouteVisual route4 = createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 4);
-        RouteVisual route5 = createRouteVisual(Colour.BLACK, City.KINGS_CROSS, City.COVENT_GARDEN, 4);
-        RouteVisual route6 = createRouteVisual(Colour.GREEN, City.THE_CHARTERHOUSE, City.BRICK_LANE, 4);
-        RouteVisual route7 = createRouteVisual(Colour.ORANGE, City.ST_PAULS, City.TOWER_OF_LONDON, 4);
-        RouteVisual route8 = createRouteVisual(Colour.PINK, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 4);
-        RouteVisual route9 = createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 3);
-        RouteVisual route10 = createRouteVisual(Colour.YELLOW, City.BIG_BEN, City.ELEPHANT_CASTLE, 4);
-        RouteVisual route11 = createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 3);
-        RouteVisual route12 = createRouteVisual(Colour.GREEN, City.WATERLOO, City.GLOBE_THEATRE, 3);
-        RouteVisual route13 = createRouteVisual(Colour.BLACK, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 4);
-
-        Player p1 = new Player("Player 1", "blue");
-        Player p2 = new Player("Player 2", "red");
-
-        route1.getRoute().setOwner(p1);
-        route2.getRoute().setOwner(p2);
-
         routeVisuals = new RouteVisual[] {
-                route1, route2, route3, route4, route5, route6, route7,
-                route8, route9, route10, route11, route12, route13
+                // Top / left
+                createRouteVisual(Colour.GREEN, City.REGENTS_PARK, City.KINGS_CROSS, 4),
+                createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BAKER_STREET, 2),
+                createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 4),
+                createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 3),
+                createRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4),
+                createRouteVisual(Colour.BLACK, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
+                createRouteVisual(Colour.MULTI, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
+                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BRITISH_MUSEUM, 3),
+
+                // Middle
+                createRouteVisual(Colour.BLACK, City.KINGS_CROSS, City.COVENT_GARDEN, 4),
+                createRouteVisual(Colour.MULTI, City.KINGS_CROSS, City.THE_CHARTERHOUSE, 4),
+                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 2),
+                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.THE_CHARTERHOUSE, 4),
+                createRouteVisual(Colour.GREEN, City.THE_CHARTERHOUSE, City.BRICK_LANE, 4),
+                createRouteVisual(Colour.MULTI, City.COVENT_GARDEN, City.ST_PAULS, 3),
+                createRouteVisual(Colour.PINK, City.COVENT_GARDEN, City.WATERLOO, 3),
+
+                // Bottom left
+                createRouteVisual(Colour.ORANGE, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 2),
+                createRouteVisual(Colour.MULTI, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 2),
+                createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 3),
+                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 3),
+                createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 3),
+                createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 3),
+                createRouteVisual(Colour.BLACK, City.TRAFALGAR_SQUARE, City.BIG_BEN, 2),
+
+                // Bottom / right
+                createRouteVisual(Colour.YELLOW, City.BIG_BEN, City.ELEPHANT_CASTLE, 4),
+                createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 3),
+                createRouteVisual(Colour.GREEN, City.WATERLOO, City.GLOBE_THEATRE, 3),
+                createRouteVisual(Colour.BLACK, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 4),
+                createRouteVisual(Colour.PINK, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 4),
+                createRouteVisual(Colour.YELLOW, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 4),
+                createRouteVisual(Colour.ORANGE, City.ST_PAULS, City.TOWER_OF_LONDON, 4),
+                createRouteVisual(Colour.BLACK, City.BRICK_LANE, City.TOWER_OF_LONDON, 4),
+                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 2),
+                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.THE_CHARTERHOUSE, 2)
         };
     }
 
@@ -119,10 +157,28 @@ public class MapPanel extends JPanel {
                 g2.setColor(Color.WHITE);
                 g2.drawRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
 
+                if (controller.getSelectedRoute() == route) {
+                    g2.setColor(Color.CYAN);
+                    g2.setStroke(new BasicStroke(3));
+                    g2.drawRoundRect(
+                            segment.x - 3,
+                            segment.y - 3,
+                            segment.width + 6,
+                            segment.height + 6,
+                            10,
+                            10
+                    );
+                    g2.setStroke(new BasicStroke(1));
+                }
+
                 if (route.getOwner() != null) {
                     g2.setFont(new Font("Arial", Font.BOLD, 10));
                     g2.setColor(Color.WHITE);
-                    g2.drawString(getPlayerLabel(route.getOwner().getName()), segment.x + 8, segment.y + 10);
+                    g2.drawString(
+                            getPlayerLabel(route.getOwner().getName()),
+                            segment.x + 8,
+                            segment.y + 10
+                    );
                 }
             }
         }
@@ -161,6 +217,7 @@ public class MapPanel extends JPanel {
         } else if (playerName.equalsIgnoreCase("Player 2")) {
             return "P2";
         }
+
         return "P";
     }
 
