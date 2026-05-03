@@ -225,7 +225,7 @@ public class Player {
      * @param points - points to take away
      */
     public void takePoints(int points) {
-        this.points += points;
+        this.points -= points;
     }
 
     /**
@@ -248,5 +248,26 @@ public class Player {
 
     public String getColour() {
         return colour;
+    }
+
+    /**
+     * Adds a TransportCard to this player's hand.
+     * Increments the count for that card's colour in the transportCards map.
+     *
+     * @param card the card received (from deck deal or draw)
+     */
+    public void addTransportCard(TransportCard card) {
+        Colour colour = card.getColour();
+        transportCards.put(colour, transportCards.get(colour) + 1);
+    }
+
+    /**
+     * Adds a DestinationTicket to this player's hand.
+     * Called by DestinationTicketCardDeck after the player selects which tickets to keep.
+     *
+     * @param ticket the destination ticket to add
+     */
+    public void addDestinationTicket(DestinationTicket ticket) {
+        destTicketCards.add(ticket);
     }
 }
