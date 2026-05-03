@@ -21,6 +21,7 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
 
     private DestinationTicketCardDeck() {
         super();
+        pendingDraw = new ArrayList<>();
         buildDeck();
         shuffle();
     }
