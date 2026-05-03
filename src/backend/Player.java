@@ -32,6 +32,7 @@ public class Player {
     public Player(String name, String colour) {
         this.name = name;
         this.colour = colour;
+        destTicketCards = new ArrayList<>();
         transportCards = new HashMap<>();
         routesClaimed = new HashMap<>();
 
@@ -43,7 +44,7 @@ public class Player {
         City.WATERLOO};
 
         Colour[] colours = {Colour.GREEN, Colour.YELLOW, Colour.ORANGE, Colour.PINK, Colour.BLACK,
-        Colour.MULTI};
+        Colour.MULTI,Colour.BLUE};
 
 
         // initialises adjacency list for the routes Player will claim
@@ -66,36 +67,37 @@ public class Player {
      */
     public void claimRoute(Route route) {
 
-        // Get route colour
         Colour routeColour = route.getColour();
+        int routeLength = route.getLength();
+        int sameColour = transportCards.get(routeColour);
+        int multiColour = transportCards.get(Colour.MULTI);
 
-        // Get difference between route length and same colour cards held by Player
-        int cardRouteDiff = route.getLength() - transportCards.get(routeColour);
-
-        // If enough same colour cards
-        if  (cardRouteDiff <= 0) {
-            // Decrement number of cards of that colour in Player's hand by the route length
-            transportCards.put(routeColour, transportCards.get(routeColour) - route.getLength());
-        } else if (transportCards.get(routeColour) == 0){
-            // If player wants to claim route using all multicoloured cards
-            transportCards.put(routeColour, transportCards.get(Colour.MULTI) - route.getLength());
+        int sameColourUsed;
+        int multiColourUsed;
+        if (sameColour >= routeLength) {
+            // Enough same-colour cards — no buses needed
+            sameColourUsed = routeLength;
+            multiColourUsed = 0;
         } else {
-            // If it needs to use multi colour cards with same colour,set same coloured cards to 0,
-            // and reduce the multi colour card count
-            transportCards.put(routeColour, 0);
-            transportCards.put(Colour.MULTI, cardRouteDiff);
+            sameColourUsed = sameColour;
+            multiColourUsed = routeLength - sameColour;
         }
 
-        // Decrement number of buses by the route length
-        this.buses -= route.getLength();
+        transportCards.put(routeColour, sameColour - sameColourUsed);
+        transportCards.put(Colour.MULTI, multiColour - multiColourUsed);
 
-        // Increase player points according to route length
+        // Return spent cards to the discard pile so the deck can reshuffle them
+        TransportationDeck deck = TransportationDeck.getInstance();
+        deck.discard(routeColour, sameColourUsed);
+        deck.discard(Colour.MULTI, multiColourUsed);
+
+        this.buses  -= routeLength;
         this.points += route.calculatePoints();
 
-        // Add the route to Player's claimed routes adjacency list
         routesClaimed.get(route.getCityA()).add(route);
         routesClaimed.get(route.getCityB()).add(route);
     }
+
 
 
     /**
@@ -149,25 +151,11 @@ public class Player {
                 continue;
             }
 
-            City nextCity;
-
-            // Next city to visit is the other city in the route
-            if (route.getCityA().equals(city)) {
-                nextCity = route.getCityB();
-            } else {
-                nextCity = route.getCityA();
-            }
-
-            // Get route length
+            City nextCity = route.getCityA().equals(city) ? route.getCityB() : route.getCityA();
             int length = route.getLength();
 
-            //Mark current route as visited
             visitedRoutes.add(route);
-
-            //Recursive call on city
             dfs(nextCity, visitedRoutes, currentPathLen + length);
-
-            // Remove the route from visited to allow for backtracking
             visitedRoutes.remove(route);
         }
     }
@@ -248,6 +236,10 @@ public class Player {
 
     public String getColour() {
         return colour;
+    }
+
+    public List<DestinationTicket> getDestinationTickets() {
+        return new ArrayList<>(destTicketCards);
     }
 
     /**
