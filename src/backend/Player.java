@@ -37,13 +37,13 @@ public class Player {
 
         // TEMPORARY CITIES - TODO: NEED TO MOVE INTO GAME CLASS WHEN MADE
         City[] cities = {City.BAKER_STREET, City.COVENT_GARDEN, City.PICCADILLY_CIRCUS, City.BIG_BEN,
-        City.BRICK_LANE, City.BRITISH_MUSEUM, City.BUCKINGHAM_PALACE, City.ELEPHANT_CASTLE,
-        City.KINGS_CROSS, City.GLOBE_THEATRE, City.HYDE_PARK, City.THE_CHARTERHOUSE,
-        City.TRAFALGAR_SQUARE, City.TOWER_OF_LONDON, City.REGENTS_PARK, City.ST_PAULS,
-        City.WATERLOO};
+                City.BRICK_LANE, City.BRITISH_MUSEUM, City.BUCKINGHAM_PALACE, City.ELEPHANT_CASTLE,
+                City.KINGS_CROSS, City.GLOBE_THEATRE, City.HYDE_PARK, City.THE_CHARTERHOUSE,
+                City.TRAFALGAR_SQUARE, City.TOWER_OF_LONDON, City.REGENTS_PARK, City.ST_PAULS,
+                City.WATERLOO};
 
         Colour[] colours = {Colour.GREEN, Colour.YELLOW, Colour.ORANGE, Colour.PINK, Colour.BLACK,
-        Colour.MULTI};
+                Colour.MULTI};
 
 
         // initialises adjacency list for the routes Player will claim
@@ -52,7 +52,7 @@ public class Player {
         }
 
         //initialises dictionary to store how many of each transport card Player is holding
-        for (Colour cardColour: colours) {
+        for (Colour cardColour : colours) {
             transportCards.put(cardColour, 0);
         }
 
@@ -73,10 +73,10 @@ public class Player {
         int cardRouteDiff = route.getLength() - transportCards.get(routeColour);
 
         // If enough same colour cards
-        if  (cardRouteDiff <= 0) {
+        if (cardRouteDiff <= 0) {
             // Decrement number of cards of that colour in Player's hand by the route length
             transportCards.put(routeColour, transportCards.get(routeColour) - route.getLength());
-        } else if (transportCards.get(routeColour) == 0){
+        } else if (transportCards.get(routeColour) == 0) {
             // If player wants to claim route using all multicoloured cards
             transportCards.put(routeColour, transportCards.get(Colour.MULTI) - route.getLength());
         } else {
@@ -103,7 +103,7 @@ public class Player {
      * and adds/decreases points based on if they have connected the cities or not
      */
     public void calcDestTickets() {
-        for (DestinationTicket destTicket: destTicketCards) {
+        for (DestinationTicket destTicket : destTicketCards) {
             int destTickerPts = destTicket.getPoints();
             if (destTicket.checkPlayerConnect(this)) {
                 numDestTicketCompleted++;
@@ -113,12 +113,13 @@ public class Player {
             }
         }
     }
+
     /**
      * Method that calculates the longest continuous path from Player's
      * claimed routes. Calls dfs method on all cities to cover all possible start points.
      */
     public void calcLongestPath() {
-        for (City city: routesClaimed.keySet()) {
+        for (City city : routesClaimed.keySet()) {
             dfs(city, new ArrayList<>(), 0);
         }
     }
@@ -128,14 +129,14 @@ public class Player {
      * Method to calculate longest continous path from a City. Uses DFS + Backtracking
      * for an exhaustive search of the graph formed by Player's claimed routes.
      *
-     * @param city - the city to calculate the path from
-     * @param visitedRoutes - stores routes visited in calculations, to prevent repeating it
+     * @param city           - the city to calculate the path from
+     * @param visitedRoutes  - stores routes visited in calculations, to prevent repeating it
      * @param currentPathLen - the length of the calculated path
-     *
-     * GenAI Declaration:
-     * GenAI was used to assist with the structure of the algorithm. I used ChatGPT-5 to
-     * get an algorithm to find the weight of the longest path in an undirected graph.
-     * I then used its output and adapted it to the way Routes are stored.
+     *                       <p>
+     *                       GenAI Declaration:
+     *                       GenAI was used to assist with the structure of the algorithm. I used ChatGPT-5 to
+     *                       get an algorithm to find the weight of the longest path in an undirected graph.
+     *                       I then used its output and adapted it to the way Routes are stored.
      */
     public void dfs(City city, List<Route> visitedRoutes, int currentPathLen) {
 
@@ -144,7 +145,7 @@ public class Player {
         for (Route route : routesClaimed.get(city)) {
 
             //Check if route has been visited
-            if  (visitedRoutes.contains(route)) {
+            if (visitedRoutes.contains(route)) {
                 //If it has, then skip
                 continue;
             }
@@ -171,7 +172,6 @@ public class Player {
             visitedRoutes.remove(route);
         }
     }
-
 
 
     /**
@@ -250,5 +250,16 @@ public class Player {
      */
     public void addDestinationTicket(DestinationTicket ticket) {
         destTicketCards.add(ticket);
+    }
+
+    /**
+     * Adds a TransportCard to this player's hand.
+     * Increments the count for that card's colour in the transportCards map.
+     *
+     * @param card the card received (from deck deal or draw)
+     */
+    public void addTransportCard(TransportCard card) {
+        Colour colour = card.getColour();
+        transportCards.put(colour, transportCards.get(colour) + 1);
     }
 }
