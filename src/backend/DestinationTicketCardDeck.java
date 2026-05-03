@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
 
+    private List<DestinationTicket> pendingDraw;
+
     // ── Singleton ─────────────────────────────────────────────────────────────────
 
     private static DestinationTicketCardDeck instance;
@@ -33,6 +35,9 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
             instance = new DestinationTicketCardDeck();
         }
         return instance;
+    }
+    public static void reset() {
+        instance = null;
     }
 
     // ── Deck building ─────────────────────────────────────────────────────────────
@@ -143,11 +148,7 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
      *     {@code keptIndices} are returned to the bottom of the deck
      */
     public List<DestinationTicket> getTickets(int min, Player player, List<Integer> keptIndices) {
-        List<DestinationTicket> drawn = new ArrayList<>();
-        for (int i = 0; i < 3 && !cards.isEmpty(); i++) {
-            drawn.add(draw());
-        }
-
+        List<DestinationTicket> drawn = new ArrayList<>(pendingDraw);
         for (int i = 0; i < drawn.size(); i++) {
             if (keptIndices.contains(i)) {
                 player.addDestinationTicket(drawn.get(i));
@@ -156,6 +157,7 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
             }
         }
 
+        pendingDraw.clear();
         return drawn;
     }
 
@@ -172,10 +174,16 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
      * @return the list of up to three tickets drawn
      */
     public List<DestinationTicket> getTickets(int min, Player player) {
-        List<DestinationTicket> drawn = new ArrayList<>();
+        pendingDraw.clear();
         for (int i = 0; i < 3 && !cards.isEmpty(); i++) {
-            drawn.add(draw());
+            pendingDraw.add(draw());
         }
-        return drawn;
+        return new ArrayList<>(pendingDraw);
+    }
+    public int size() {
+        return cards.size();
+    }
+    public List<DestinationTicket> getPendingDraw() {
+        return new ArrayList<>(pendingDraw);
     }
 }
