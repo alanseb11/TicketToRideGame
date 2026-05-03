@@ -26,10 +26,12 @@ public class TransportationDeck extends Deck<TransportCard> {
     // ── Singleton ─────────────────────────────────────────────────────────────────
 
     private static TransportationDeck instance;
+    private ArrayList<TransportCard> discardPile;
 
     private TransportationDeck() {
         super();
         faceUpCards = new ArrayList<>();
+        discardPile = new ArrayList<>();
         buildDeck();
         shuffle();
     }
@@ -44,6 +46,10 @@ public class TransportationDeck extends Deck<TransportCard> {
             instance = new TransportationDeck();
         }
         return instance;
+    }
+
+    public static void reset() {
+        instance = null;
     }
 
     // ── Deck building ─────────────────────────────────────────────────────────────
@@ -89,7 +95,6 @@ public class TransportationDeck extends Deck<TransportCard> {
                 player.addTransportCard(card);
             }
         }
-        turnFaceUp();
     }
 
     /**
@@ -99,7 +104,27 @@ public class TransportationDeck extends Deck<TransportCard> {
      */
     @Override
     public void toDeck(TransportCard card) {
-        cards.add(card);
+        discardPile.add(card);
+    }
+
+    private String cardNameFor(Colour colour) {
+        return switch (colour) {
+            case GREEN -> "Old Car";
+            case BLUE -> "Milk Truck";
+            case YELLOW -> "Submarine";
+            case ORANGE -> "Sports Car";
+            case PINK -> "Rocket Car";
+            case BLACK -> "Cab";
+            case MULTI -> "Double Decker Bus";
+            default -> colour.name();
+        };
+    }
+
+    public void discard(Colour colour, int count) {
+        String name = cardNameFor(colour);
+        for (int i = 0; i < count; i++) {
+            discardPile.add(new TransportCard(colour, name));
+        }
     }
 
     /**
@@ -110,9 +135,15 @@ public class TransportationDeck extends Deck<TransportCard> {
     @Override
     public TransportCard draw() {
         if (cards.isEmpty()) {
-            return null;
+            if (discardPile.isEmpty()) {
+                return null;
+            }
+            // Reshuffle discard pile into draw pile
+            cards.addAll(discardPile);
+            discardPile.clear();
+            Collections.shuffle(cards);
         }
-        return cards.remove(0);
+        return cards.removeFirst();
     }
 
     // ── Face-up management ────────────────────────────────────────────────────────
@@ -130,7 +161,7 @@ public class TransportationDeck extends Deck<TransportCard> {
                 faceUpCards.add(card);
             }
         }
-        while (checkThreeBuses()) {
+        while (checkThreeBuses() && !(cards.isEmpty() && discardPile.isEmpty())) {
             for (TransportCard card : faceUpCards) {
                 toDeck(card);
             }
@@ -182,6 +213,9 @@ public class TransportationDeck extends Deck<TransportCard> {
                 drawsRemaining--;
 
             } else {
+                if (choice < 0 || choice >= faceUpCards.size()) {
+                    continue;
+                }
                 // Draw from face-up slot
                 TransportCard chosen = faceUpCards.get(choice);
 
@@ -201,6 +235,13 @@ public class TransportationDeck extends Deck<TransportCard> {
                         replacement.setCanDraw(false);
                     }
                     faceUpCards.add(choice, replacement);
+                }
+                if (checkThreeBuses()) {
+                    for (TransportCard card : faceUpCards) {
+                        toDeck(card);
+                    }
+                    faceUpCards.clear();
+                    fillFaceUpRow();
                 }
 
                 if (isBus) {
@@ -242,5 +283,13 @@ public class TransportationDeck extends Deck<TransportCard> {
      */
     public List<TransportCard> getFaceUpCards() {
         return Collections.unmodifiableList(faceUpCards);
+    }
+
+    public int drawPileSize() {
+        return cards.size();
+    }
+
+    public int discardPileSize() {
+        return discardPile.size();
     }
 }
