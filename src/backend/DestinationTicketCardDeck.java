@@ -111,7 +111,7 @@ public class DestinationTicketCardDeck extends Deck<DestinationTicket> {
         if (cards.isEmpty()) {
             return null;
         }
-        return cards.removeFirst();
+        return cards.remove(0);
     }
 
     // ── Mid-game draw ─────────────────────────────────────────────────────────────
