@@ -7,20 +7,67 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * The GameController manages the overall game flow and logic.
+ *
+ * It coordinates player turns, route selection, card drawing,
+ * ticket selection, and determines when the game ends.
+ *
+ * It acts as the bridge between the frontend UI and backend game logic.
+ */
 public class GameController {
 
+    /**
+     * Array of players in the game.
+     */
     private Player[] players;
+
+    /**
+     * Index of the current player in the players array.
+     */
     private int currentPlayerIndex;
+
+    /**
+     * The currently selected route on the map.
+     */
     private Route selectedRoute;
+
+    /**
+     * Message displayed to the UI for feedback.
+     */
     private String message;
 
+    /**
+     * Backend game logic handler.
+     */
     private Game game;
+
+    /**
+     * Indicates if the final round has started.
+     */
     private boolean finalRoundStarted;
+
+    /**
+     * Remaining turns once final round begins.
+     */
     private int finalTurnsRemaining;
 
+    /**
+     * Deck for transport cards.
+     */
     private final TransportationDeck transportDeck;
+
+    /**
+     * Deck for destination ticket cards.
+     */
     private final DestinationTicketCardDeck ticketDeck;
 
+    /**
+     * Constructs the GameController with two players.
+     *
+     * @param playerOne first player
+     * @param playerTwo second player
+     */
     public GameController(Player playerOne, Player playerTwo) {
         this.players = new Player[] {playerOne, playerTwo};
         this.currentPlayerIndex = 0;
@@ -29,52 +76,73 @@ public class GameController {
         this.game = new Game(playerOne, playerTwo);
         this.finalRoundStarted = false;
         this.finalTurnsRemaining = -1;
+
         TransportationDeck.reset();
         DestinationTicketCardDeck.reset();
+
         transportDeck = TransportationDeck.getInstance();
         ticketDeck    = DestinationTicketCardDeck.getInstance();
     }
 
     /**
-     * Deals starting hands and runs initial destination-ticket selection dialogs.
-     * Called once from GameFrame after the window is visible.
+     * Sets up the game by dealing initial cards and
+     * allowing players to choose their starting destination tickets.
      */
     public void setup() {
         for (Player player : players) {
             transportDeck.deal(player);
         }
+
         transportDeck.turnFaceUp();
 
-        // Each player must keep at least 2 of their 3 drawn starting tickets
+        // Each player must keep at least 2 tickets
         for (Player player : players) {
             List<DestinationTicket> drawn = ticketDeck.getTickets(2, player);
             List<Integer> kept = chooseTickets(player, drawn, 2);
             ticketDeck.getTickets(2, player, kept);
         }
-
-
     }
 
+    /**
+     * @return the current player
+     */
     public Player getCurrentPlayer() {
         return players[currentPlayerIndex];
     }
 
+    /**
+     * @return player one
+     */
     public Player getPlayerOne() {
         return players[0];
     }
 
+    /**
+     * @return player two
+     */
     public Player getPlayerTwo() {
         return players[1];
     }
 
+    /**
+     * @return the currently selected route
+     */
     public Route getSelectedRoute() {
         return selectedRoute;
     }
 
+    /**
+     * @return current game message
+     */
     public String getMessage() {
         return message;
     }
 
+    /**
+     * Sets the selected route and updates the message.
+     *
+     * @param route the route selected by the player
+     */
     public void selectRoute(Route route) {
         selectedRoute = route;
 
@@ -88,33 +156,31 @@ public class GameController {
         }
     }
 
+    /**
+     * Attempts to claim the currently selected route.
+     * Validates ownership and required resources before claiming.
+     */
     public void claimSelectedRoute() {
         Player currentPlayer = getCurrentPlayer();
 
-        // Must select a route
         if (selectedRoute == null) {
             message = "Select a route first.";
             return;
         }
 
-        // If selected route is already claimed, cannot claim
         if (selectedRoute.getOwner() != null) {
             message = "This route has already been claimed.";
             return;
         }
 
-        // Get cards player may use to claim the route with
         HashMap<Colour, Integer> cardsToUse = selectedRoute.canPlayerClaim(currentPlayer);
 
-        // If no cards able to be used, cannot claim
         if (cardsToUse == null) {
             message = currentPlayer.getName() + " does not have enough cards or buses.";
             return;
         }
 
-        // When claiming, set as owner
         selectedRoute.setOwner(currentPlayer);
-        // Call claim route logic for points etc.
         currentPlayer.claimRoute(selectedRoute, cardsToUse);
 
         message = currentPlayer.getName() + " claimed "
@@ -126,59 +192,60 @@ public class GameController {
         endTurn();
     }
 
+    /**
+     * Allows the player to draw transport cards via UI selection.
+     * Handles special rule where a wildcard (MULTI) card ends the draw.
+     */
     public void drawTransportCard() {
         Player current = getCurrentPlayer();
         List<TransportCard> faceUp = transportDeck.getFaceUpCards();
 
-        // Build option labels: one per face-up card, plus a blind-draw option
         String[] options = new String[faceUp.size() + 1];
+
         for (int i = 0; i < faceUp.size(); i++) {
             options[i] = (i + 1) + ": " + faceUp.get(i).getName()
                     + " (" + faceUp.get(i).getColour() + ")";
         }
+
         options[faceUp.size()] = "Draw from pile";
 
-        // First pick
         int pick1 = JOptionPane.showOptionDialog(
                 null, "Pick first card:", "Draw Transport Cards",
                 JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                 null, options, options[options.length - 1]);
+
         if (pick1 < 0 || pick1 >= faceUp.size()) pick1 = faceUp.size();
         int choice1 = (pick1 == faceUp.size()) ? -1 : pick1;
 
-        // A face-up Bus counts as both draws — skip second pick
         boolean firstWasBus = (choice1 >= 0)
                 && faceUp.get(choice1).getColour() == Colour.MULTI;
 
-        int choice2 = -1; // default: blind (ignored by deck if first was a bus)
-        transportDeck.draw(current, new int[]{choice1});
+        int choice2 = -1;
+
         if (!firstWasBus) {
-            List<TransportCard> faceUpAfterFirst = transportDeck.getFaceUpCards(); // live state
-            String[] options2 = new String[faceUpAfterFirst.size() + 1];
-            for (int i = 0; i < faceUpAfterFirst.size(); i++) {
-                TransportCard card = faceUpAfterFirst.get(i);
-                // shows the real card name/colour, or flags locked buses
-                options2[i] = !card.canDraw()
-                        ? (i + 1) + ": " + card.getName() + " (" + card.getColour() + ") [Bus – locked]"
-                        : (i + 1) + ": " + card.getName() + " (" + card.getColour() + ")";
+            String[] options2 = options.clone();
+
+            if (choice1 >= 0 && choice1 < faceUp.size()) {
+                options2[choice1] = (choice1 + 1) + ": ? (replacement card)";
             }
-            options2[faceUpAfterFirst.size()] = "Draw from pile";
+
             int pick2 = JOptionPane.showOptionDialog(
                     null, "Pick second card:", "Draw Transport Cards",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
                     null, options2, options2[options2.length - 1]);
+
             if (pick2 < 0 || pick2 >= faceUp.size()) pick2 = faceUp.size();
             choice2 = (pick2 == faceUp.size()) ? -1 : pick2;
         }
-        transportDeck.draw(current, new int[]{choice2});
 
-        for (TransportCard card : transportDeck.getFaceUpCards()) {
-            card.setCanDraw(true);
-        }
+        transportDeck.draw(current, new int[]{choice1, choice2});
         message = current.getName() + " drew transport cards.";
         endTurn();
     }
 
+    /**
+     * Allows the player to draw and choose destination tickets.
+     */
     public void drawDestinationTicket() {
         Player current = getCurrentPlayer();
         List<DestinationTicket> drawn = ticketDeck.getTickets(1, current);
@@ -190,38 +257,44 @@ public class GameController {
 
         List<Integer> kept = chooseTickets(current, drawn, 1);
         ticketDeck.getTickets(1, current, kept);
+
         message = current.getName() + " drew destination tickets.";
         endTurn();
     }
 
-
-    private void dealStartingCards() {
-        for (Player player : players) {
-            for (int i = 0; i < 4; i++) {
-                giveRandomTransportCard(player);
-            }
-        }
-    }
-
+    /**
+     * Displays a UI for selecting which destination tickets to keep.
+     *
+     * @param player the player choosing tickets
+     * @param tickets the tickets drawn
+     * @param min minimum number of tickets to keep
+     * @return list of indices representing kept tickets
+     */
     private List<Integer> chooseTickets(Player player,
                                         List<DestinationTicket> tickets, int min) {
+
         JCheckBox[] boxes = new JCheckBox[tickets.size()];
         JPanel panel = new JPanel(new GridLayout(tickets.size() + 1, 1));
+
         panel.add(new JLabel(player.getName() + " — keep at least " + min + ":"));
 
         for (int i = 0; i < tickets.size(); i++) {
             DestinationTicket t = tickets.get(i);
+
             String label = formatCityName(t.getCityA().name())
                     + "  →  " + formatCityName(t.getCityB().name())
                     + "  (" + t.getPoints() + " pts)";
+
             boxes[i] = new JCheckBox(label, true);
             panel.add(boxes[i]);
         }
+
         while (true) {
             JOptionPane.showMessageDialog(
                     null, panel, "Destination Tickets", JOptionPane.PLAIN_MESSAGE);
 
             List<Integer> kept = new ArrayList<>();
+
             for (int i = 0; i < boxes.length; i++) {
                 if (boxes[i].isSelected()) kept.add(i);
             }
@@ -238,23 +311,10 @@ public class GameController {
         }
     }
 
-    private void giveRandomTransportCard(Player player) {
-        Colour[] drawableColours = {
-                Colour.GREEN,
-                Colour.YELLOW,
-                Colour.ORANGE,
-                Colour.PINK,
-                Colour.BLACK,
-                Colour.MULTI
-        };
-
-        int randomIndex = (int) (Math.random() * drawableColours.length);
-        Colour drawnColour = drawableColours[randomIndex];
-
-        int currentAmount = player.getTransportCards().getOrDefault(drawnColour, 0);
-        player.getTransportCards().put(drawnColour, currentAmount + 1);
-    }
-
+    /**
+     * Ends the current player's turn and switches to the next player.
+     * Also handles final round logic and game termination.
+     */
     public void endTurn() {
         Player playerWhoJustPlayed = getCurrentPlayer();
 
@@ -277,16 +337,25 @@ public class GameController {
         message += " Next turn: " + getCurrentPlayer().getName();
     }
 
+    /**
+     * Formats enum-style city names into readable strings.
+     *
+     * @param cityName raw enum name
+     * @return formatted city name
+     */
     private String formatCityName(String cityName) {
         return cityName.replace("_", " ");
     }
 
+    /**
+     * Handles end-of-game scoring and displays results.
+     */
     private void endGame() {
         for (Player player : players) {
             player.calcLongestPath();
         }
 
-        java.util.List<Player> winners = game.endGame();
+        List<Player> winners = game.endGame();
 
         StringBuilder result = new StringBuilder();
 
@@ -310,11 +379,11 @@ public class GameController {
                     .append(" points\n");
         }
 
-        javax.swing.JOptionPane.showMessageDialog(
+        JOptionPane.showMessageDialog(
                 null,
                 result.toString(),
                 "Game Over",
-                javax.swing.JOptionPane.INFORMATION_MESSAGE
+                JOptionPane.INFORMATION_MESSAGE
         );
 
         message = "Game over.";
