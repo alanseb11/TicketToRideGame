@@ -71,17 +71,36 @@ public class Route{
                 // If the path is grey (any colour set can claim), use first set with enough
                 // cards to claim the route
                 if (colour == Colour.MULTI) {
+                    // loop through to check if a full colour set can be used
                     for (Colour cardColour : transportCards.keySet()) {
-                        if (transportCards.get(cardColour) >= length) {
+                        int numCards =  transportCards.get(cardColour);
+                        if (numCards >= length) {
                             cardsToUse.put(cardColour, length);
                             return cardsToUse;
                         }
                     }
+
+                    // loop through to check if a mixed set of one colour + multi colour can be used
+                    for (Colour cardColour : transportCards.keySet()) {
+                        int numCards =  transportCards.get(cardColour);
+                        int diff = length - numCards;
+
+                        if (transportCards.get(Colour.MULTI) >= diff) {
+                            // In case route claimable with just multi-coloured cards
+                            cardsToUse.put(colour, numCards);
+                            cardsToUse.put(Colour.MULTI, diff);
+                            return cardsToUse;
+
+                        }
+
+                    }
+
                 } else {
                     int numSameColourCards = transportCards.get(colour);
                     // If there are enough same colour cards, use that to claim
                     if (numSameColourCards >= length) {
                         cardsToUse.put(colour, length);
+                        return cardsToUse;
                     } else {
                         // Else if not enough, try to make up the rest with multi-coloured bus cards
                         int diff =  length - numSameColourCards;
@@ -91,6 +110,7 @@ public class Route{
                                 cardsToUse.put(colour, numSameColourCards);
                             }
                             cardsToUse.put(Colour.MULTI, diff);
+                            return cardsToUse;
 
                         } else {
                             return null;
