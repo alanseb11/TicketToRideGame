@@ -11,6 +11,7 @@ public class PlayerInfoPanel extends JPanel {
 
     private final GameController controller;
     private final JTextArea infoArea;
+    private final JButton showTicketsButton;
 
     public PlayerInfoPanel(GameController controller) {
         this.controller = controller;
@@ -21,11 +22,18 @@ public class PlayerInfoPanel extends JPanel {
         JLabel title = new JLabel("Player Info", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 18));
 
+        showTicketsButton = new JButton("Show Destination Tickets");
+        showTicketsButton.addActionListener(e -> showDestinationTicketsPopup());
+
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(title, BorderLayout.NORTH);
+        topPanel.add(showTicketsButton, BorderLayout.SOUTH);
+
         infoArea = new JTextArea();
         infoArea.setEditable(false);
         infoArea.setFont(new Font("Monospaced", Font.PLAIN, 13));
 
-        add(title, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
         add(new JScrollPane(infoArea), BorderLayout.CENTER);
 
         refresh();
@@ -59,14 +67,20 @@ public class PlayerInfoPanel extends JPanel {
                     .append("\n");
         }
 
-        text.append("Destination Tickets:\n");
+        text.append("Destination Tickets: Hidden\n");
+    }
 
-        if (player.getDestTicketCards().isEmpty()) {
-            text.append("  None\n");
+    private void showDestinationTicketsPopup() {
+        Player currentPlayer = controller.getCurrentPlayer();
+
+        StringBuilder message = new StringBuilder();
+        message.append(currentPlayer.getName()).append("'s Destination Tickets:\n\n");
+
+        if (currentPlayer.getDestTicketCards().isEmpty()) {
+            message.append("None");
         } else {
-            for (DestinationTicket ticket : player.getDestTicketCards()) {
-                text.append("  ")
-                        .append(ticket.getCityA())
+            for (DestinationTicket ticket : currentPlayer.getDestTicketCards()) {
+                message.append(ticket.getCityA())
                         .append(" -> ")
                         .append(ticket.getCityB())
                         .append(" (")
@@ -75,5 +89,12 @@ public class PlayerInfoPanel extends JPanel {
                         .append("\n");
             }
         }
+
+        JOptionPane.showMessageDialog(
+                this,
+                message.toString(),
+                "Destination Tickets",
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 }

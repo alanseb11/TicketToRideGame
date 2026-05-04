@@ -157,7 +157,7 @@ public class MapPanel extends JPanel {
         return segments;
     }
 
-    private void drawRotatedSegment(Graphics2D g2, Rectangle segment, double angle, Color color) {
+    private void drawRotatedSegment(Graphics2D g2, Rectangle segment, double angle, Color color, boolean selected) {
         Graphics2D copy = (Graphics2D) g2.create();
 
         int centerX = segment.x + segment.width / 2;
@@ -170,6 +170,20 @@ public class MapPanel extends JPanel {
 
         copy.setColor(Color.WHITE);
         copy.drawRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
+
+        if (selected) {
+            copy.setColor(Color.CYAN);
+            copy.setStroke(new BasicStroke(3));
+            copy.drawRoundRect(
+                    segment.x - 3,
+                    segment.y - 3,
+                    segment.width + 6,
+                    segment.height + 6,
+                    10,
+                    10
+            );
+            copy.setStroke(new BasicStroke(1));
+        }
 
         copy.dispose();
     }
@@ -190,27 +204,14 @@ public class MapPanel extends JPanel {
             Route route = routeVisual.getRoute();
             Color drawColor = getDrawColor(route);
 
+            Point start = cityPositions.get(route.getCityA());
+            Point end = cityPositions.get(route.getCityB());
+            double angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+            boolean selected = controller.getSelectedRoute() == route;
+
             for (Rectangle segment : routeVisual.getSegments()) {
-                Point start = cityPositions.get(route.getCityA());
-                Point end = cityPositions.get(route.getCityB());
-
-                double angle = Math.atan2(end.y - start.y, end.x - start.x);
-
-                drawRotatedSegment(g2, segment, angle, drawColor);
-
-                if (controller.getSelectedRoute() == route) {
-                    g2.setColor(Color.CYAN);
-                    g2.setStroke(new BasicStroke(3));
-                    g2.drawRoundRect(
-                            segment.x - 3,
-                            segment.y - 3,
-                            segment.width + 6,
-                            segment.height + 6,
-                            10,
-                            10
-                    );
-                    g2.setStroke(new BasicStroke(1));
-                }
+                drawRotatedSegment(g2, segment, angle, drawColor, selected);
 
                 if (route.getOwner() != null) {
                     g2.setFont(new Font("Arial", Font.BOLD, 10));
