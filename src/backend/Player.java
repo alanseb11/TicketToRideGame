@@ -64,43 +64,17 @@ public class Player {
      * Method that handles logic when Player claims a Route
      *
      * @param route - route to be claimed
+     * @param cardsToUse - cards player uses to claim the route
      */
-    public void claimRoute(Route route) {
+    public void claimRoute(Route route, HashMap<Colour, Integer> cardsToUse) {
 
-        // Get route colour
-        Colour routeColour = route.getColour();
-
-        // Number of same-colour cards available
-        int sameColour = transportCards.get(routeColour);
-
-        // How many MULTI (bus) cards need to fill the gap
-        int cardRouteDiff = route.getLength() - sameColour;
-
-        int sameColourUsed;
-        int multiUsed;
-
-        // If enough same colour cards
-        if (cardRouteDiff <= 0) {
-            // Use only same-colour cards; no buses needed
-            sameColourUsed = route.getLength();
-            multiUsed = 0;
-            transportCards.put(routeColour, sameColour - sameColourUsed);
-        } else if (sameColour == 0) {
-            // Player claims using only bus cards
-            sameColourUsed = 0;
-            multiUsed = route.getLength();
-            transportCards.put(Colour.MULTI, transportCards.get(Colour.MULTI) - multiUsed);
-        } else {
-            // Bug fix: previously stored cardRouteDiff (amount spent) as the new MULTI count
-            // Use all same-colour cards, fill the remainder with buses
-            sameColourUsed = sameColour;
-            multiUsed = cardRouteDiff;
-            transportCards.put(routeColour, 0);
-            transportCards.put(Colour.MULTI, transportCards.get(Colour.MULTI) - multiUsed);
+        // Takes away the cards to be used when claiming from player
+        for (Colour cardColour: cardsToUse.keySet()) {
+            int numCardsUsed = cardsToUse.get(cardColour);
+            int numCardsHeld = transportCards.get(cardColour);
+            transportCards.put(cardColour, numCardsHeld - numCardsUsed);
+            TransportationDeck.getInstance().discard(cardColour, numCardsUsed);
         }
-
-        TransportationDeck.getInstance().discard(routeColour, sameColourUsed);
-        TransportationDeck.getInstance().discard(Colour.MULTI, multiUsed);
 
         // Decrement number of buses by the route length
         this.buses -= route.getLength();

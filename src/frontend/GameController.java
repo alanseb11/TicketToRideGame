@@ -91,23 +91,31 @@ public class GameController {
     public void claimSelectedRoute() {
         Player currentPlayer = getCurrentPlayer();
 
+        // Must select a route
         if (selectedRoute == null) {
             message = "Select a route first.";
             return;
         }
 
+        // If selected route is already claimed, cannot claim
         if (selectedRoute.getOwner() != null) {
             message = "This route has already been claimed.";
             return;
         }
 
-        if (!selectedRoute.canPlayerClaim(currentPlayer)) {
+        // Get cards player may use to claim the route with
+        HashMap<Colour, Integer> cardsToUse = selectedRoute.canPlayerClaim(currentPlayer);
+
+        // If no cards able to be used, cannot claim
+        if (cardsToUse == null) {
             message = currentPlayer.getName() + " does not have enough cards or buses.";
             return;
         }
 
+        // When claiming, set as owner
         selectedRoute.setOwner(currentPlayer);
-        currentPlayer.claimRoute(selectedRoute);
+        // Call claim route logic for points etc.
+        currentPlayer.claimRoute(selectedRoute, cardsToUse);
 
         message = currentPlayer.getName() + " claimed "
                 + formatCityName(selectedRoute.getCityA().name())

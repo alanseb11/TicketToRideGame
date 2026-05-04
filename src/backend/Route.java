@@ -51,36 +51,55 @@ public class Route{
      * Checks if Player can claim this route based on Transport Cards they are holding
      *
      * @param player - the player trying to claim the route
-     * @return a boolean determining if they can claim or not
+     * @return a HashMap<Colour,Interger>, with the cards that will be used to claim the route
      */
-    public boolean canPlayerClaim(Player player) {
+    public HashMap<Colour, Integer> canPlayerClaim(Player player) {
         // Get Player's transportation cards
         HashMap<Colour, Integer> transportCards = player.getTransportCards();
 
-        // Get number of cards Player has matching the route's colour
-        Integer numCards = transportCards.get(colour);
-        if (numCards == null) {
-            numCards = 0;
-        }
-        // If not enough same colour cards, check if the multicolour cards can be used
-        if (numCards < length) {
-            numCards += transportCards.get(Colour.MULTI);
-        }
-        // If enough same colour cards and buses, then can claim
-        if (this.owner != null) {
-            // This route has already been claimed
-            return false;
-        }
+        // Initialise the cards Player can use to claim this route
+        HashMap<Colour, Integer> cardsToUse = new HashMap<>();
 
-        // If enough same colour cards and buses, then can claim
-        if (doubleRoute != null) {
-            // If a double route exists, can claim if the other route has not been claimed
-            return numCards >= this.length && doubleRoute.owner == null &&
-                    player.getBuses() >= this.length;
-        } else {
-            return numCards >= this.length && player.getBuses() >= this.length;
-        }
+        // Player may only claim if they have enough trains to place along the route
+        if (player.getBuses() >= length) {
+            // If the route has a twin, and it has been claimed. Cannot claim this one.
+            if (doubleRoute != null) {
+                if (doubleRoute.owner != null) {
+                    return  null;
+                }
+            } else {
+                // If the path is grey (any colour set can claim), use first set with enough
+                // cards to claim the route
+                if (colour == Colour.MULTI) {
+                    for (Colour cardColour : transportCards.keySet()) {
+                        if (transportCards.get(cardColour) >= length) {
+                            cardsToUse.put(cardColour, length);
+                            return cardsToUse;
+                        }
+                    }
+                } else {
+                    int numSameColourCards = transportCards.get(colour);
+                    // If there are enough same colour cards, use that to claim
+                    if (numSameColourCards >= length) {
+                        cardsToUse.put(colour, length);
+                    } else {
+                        // Else if not enough, try to make up the rest with multi-coloured bus cards
+                        int diff =  length - numSameColourCards;
+                        if (transportCards.get(Colour.MULTI) >= diff) {
+                            // In case route claimable with just multi-coloured cards
+                            if (numSameColourCards != 0) {
+                                cardsToUse.put(colour, numSameColourCards);
+                            }
+                            cardsToUse.put(Colour.MULTI, diff);
 
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     /**
