@@ -77,11 +77,26 @@ public class Route{
                             return cardsToUse;
                         }
                     }
-                } else {
+
+                    // loop through to check if a mixed set of one colour + multi colour can be used
+                    for (Colour cardColour : transportCards.keySet()) {
+                        int numCards = transportCards.get(cardColour);
+                        int diff = length - numCards;
+
+                        if (transportCards.get(Colour.MULTI) >= diff) {
+                            // In case route claimable with just multi-coloured cards
+                            cardsToUse.put(colour, numCards);
+                            cardsToUse.put(Colour.MULTI, diff);
+                            return cardsToUse;
+                        }
+                    }
+
+                    } else {
                     int numSameColourCards = transportCards.get(colour);
                     // If there are enough same colour cards, use that to claim
                     if (numSameColourCards >= length) {
                         cardsToUse.put(colour, length);
+                        return cardsToUse;
                     } else {
                         // Else if not enough, try to make up the rest with multi-coloured bus cards
                         int diff =  length - numSameColourCards;
@@ -91,6 +106,7 @@ public class Route{
                                 cardsToUse.put(colour, numSameColourCards);
                             }
                             cardsToUse.put(Colour.MULTI, diff);
+                            return cardsToUse;
 
                         } else {
                             return null;
