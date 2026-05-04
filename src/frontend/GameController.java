@@ -144,10 +144,14 @@ public class GameController {
 
         int choice2 = -1; // default: blind (ignored by deck if first was a bus)
         if (!firstWasBus) {
+            String[] options2 = options.clone();
+            if (choice1 >= 0 && choice1 < faceUp.size()) {
+                options2[choice1] = (choice1 + 1) + ": ? (replacement card)";
+            }
             int pick2 = JOptionPane.showOptionDialog(
                     null, "Pick second card:", "Draw Transport Cards",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                    null, options, options[options.length - 1]);
+                    null, options2, options2[options2.length - 1]);
             if (pick2 < 0 || pick2 >= faceUp.size()) pick2 = faceUp.size();
             choice2 = (pick2 == faceUp.size()) ? -1 : pick2;
         }
