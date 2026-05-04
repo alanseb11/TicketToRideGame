@@ -151,11 +151,19 @@ public class GameController {
                 && faceUp.get(choice1).getColour() == Colour.MULTI;
 
         int choice2 = -1; // default: blind (ignored by deck if first was a bus)
+        transportDeck.draw(current, new int[]{choice1});
         if (!firstWasBus) {
-            String[] options2 = options.clone();
-            if (choice1 >= 0 && choice1 < faceUp.size()) {
-                options2[choice1] = (choice1 + 1) + ": ? (replacement card)";
+            List<TransportCard> faceUpAfterFirst = transportDeck.getFaceUpCards(); // live state
+            String[] options2 = new String[faceUpAfterFirst.size() + 1];
+            for (int i = 0; i < faceUpAfterFirst.size(); i++) {
+                TransportCard card = faceUpAfterFirst.get(i);
+                // shows the real card name/colour, or flags locked buses
+                options2[i] = !card.canDraw()
+                        ? (i + 1) + ": " + card.getName() + " (" + card.getColour() + ") [Bus – locked]"
+                        : (i + 1) + ": " + card.getName() + " (" + card.getColour() + ")";
             }
+            options2[faceUpAfterFirst.size()] = "Draw from pile";
+
             int pick2 = JOptionPane.showOptionDialog(
                     null, "Pick second card:", "Draw Transport Cards",
                     JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
@@ -163,8 +171,11 @@ public class GameController {
             if (pick2 < 0 || pick2 >= faceUp.size()) pick2 = faceUp.size();
             choice2 = (pick2 == faceUp.size()) ? -1 : pick2;
         }
+        transportDeck.draw(current, new int[]{choice2});
+        for (TransportCard card : transportDeck.getFaceUpCards()) {
+            card.setCanDraw(true);
+        }
 
-        transportDeck.draw(current, new int[]{choice1, choice2});
         message = current.getName() + " drew transport cards.";
         endTurn();
     }
