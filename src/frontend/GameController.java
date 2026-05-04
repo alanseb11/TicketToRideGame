@@ -261,11 +261,12 @@ public class GameController {
 
         if (!finalRoundStarted && playerWhoJustPlayed.getBuses() <= 2) {
             finalRoundStarted = true;
-            finalTurnsRemaining = players.length;
-            message += " Final round started!";
-        }
 
-        if (finalRoundStarted) {
+            // Every OTHER player gets one final turn
+            finalTurnsRemaining = players.length;
+
+            message += " Final round started!";
+        } else if (finalRoundStarted) {
             finalTurnsRemaining--;
 
             if (finalTurnsRemaining <= 0) {

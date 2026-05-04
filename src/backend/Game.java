@@ -8,7 +8,6 @@ public class Game {
 
     private List<Player> players;
 
-    //TODO: ADD DECKS
 
     public Game(Player player1, Player player2) {
         players = new ArrayList<>();
