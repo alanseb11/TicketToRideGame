@@ -67,43 +67,41 @@ public class MapPanel extends JPanel {
         routeVisuals = new RouteVisual[] {
                 // Top / left
                 createRouteVisual(Colour.GREEN, City.REGENTS_PARK, City.KINGS_CROSS, 4),
-                createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BAKER_STREET, 2),
-                createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 4),
-                createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 3),
+                createRouteVisual(Colour.BLUE, City.REGENTS_PARK, City.BAKER_STREET, 2),
+                createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 3),
+                createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 4),
                 createRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4),
-                createRouteVisual(Colour.BLACK, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
                 createRouteVisual(Colour.MULTI, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
-                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BRITISH_MUSEUM, 3),
+                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BRITISH_MUSEUM, 2),
 
                 // Middle
-                createRouteVisual(Colour.BLACK, City.KINGS_CROSS, City.COVENT_GARDEN, 4),
-                createRouteVisual(Colour.MULTI, City.KINGS_CROSS, City.THE_CHARTERHOUSE, 4),
-                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 2),
-                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.THE_CHARTERHOUSE, 4),
-                createRouteVisual(Colour.GREEN, City.THE_CHARTERHOUSE, City.BRICK_LANE, 4),
+                createRouteVisual(Colour.BLACK, City.KINGS_CROSS, City.BRITISH_MUSEUM, 2),
+                createRouteVisual(Colour.PINK, City.KINGS_CROSS, City.THE_CHARTERHOUSE, 3),
+                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 1),
+                createRouteVisual(Colour.BLUE, City.BRITISH_MUSEUM, City.THE_CHARTERHOUSE, 4),
+                createRouteVisual(Colour.GREEN, City.THE_CHARTERHOUSE, City.BRICK_LANE, 3),
                 createRouteVisual(Colour.MULTI, City.COVENT_GARDEN, City.ST_PAULS, 3),
-                createRouteVisual(Colour.PINK, City.COVENT_GARDEN, City.WATERLOO, 3),
+                createRouteVisual(Colour.PINK, City.COVENT_GARDEN, City.TRAFALGAR_SQUARE, 1),
 
                 // Bottom left
-                createRouteVisual(Colour.ORANGE, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 2),
-                createRouteVisual(Colour.MULTI, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 2),
-                createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 3),
-                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 3),
-                createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 3),
-                createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 3),
-                createRouteVisual(Colour.BLACK, City.TRAFALGAR_SQUARE, City.BIG_BEN, 2),
+                createRouteVisual(Colour.ORANGE, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1),
+                createRouteVisual(Colour.YELLOW, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1),
+                createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 2),
+                createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2),
+                createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 2),
+                createRouteVisual(Colour.MULTI, City.TRAFALGAR_SQUARE, City.BIG_BEN, 1),
 
                 // Bottom / right
-                createRouteVisual(Colour.YELLOW, City.BIG_BEN, City.ELEPHANT_CASTLE, 4),
-                createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 3),
-                createRouteVisual(Colour.GREEN, City.WATERLOO, City.GLOBE_THEATRE, 3),
-                createRouteVisual(Colour.BLACK, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 4),
-                createRouteVisual(Colour.PINK, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 4),
-                createRouteVisual(Colour.YELLOW, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 4),
-                createRouteVisual(Colour.ORANGE, City.ST_PAULS, City.TOWER_OF_LONDON, 4),
-                createRouteVisual(Colour.BLACK, City.BRICK_LANE, City.TOWER_OF_LONDON, 4),
-                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 2),
-                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.THE_CHARTERHOUSE, 2)
+                createRouteVisual(Colour.YELLOW, City.BIG_BEN, City.ELEPHANT_CASTLE, 3),
+                createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 2),
+                createRouteVisual(Colour.PINK, City.WATERLOO, City.GLOBE_THEATRE, 2),
+                createRouteVisual(Colour.GREEN, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 2),
+                createRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3),
+                createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3),
+                createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3),
+                createRouteVisual(Colour.BLUE, City.BRICK_LANE, City.TOWER_OF_LONDON, 3),
+                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1),
+                createRouteVisual(Colour.BLACK, City.ST_PAULS, City.THE_CHARTERHOUSE, 1)
         };
     }
 

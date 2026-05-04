@@ -44,7 +44,7 @@ public class Player {
         City.WATERLOO};
 
         Colour[] colours = {Colour.GREEN, Colour.YELLOW, Colour.ORANGE, Colour.PINK, Colour.BLACK,
-        Colour.MULTI};
+        Colour.MULTI, Colour.BLUE};
 
 
         // initialises adjacency list for the routes Player will claim

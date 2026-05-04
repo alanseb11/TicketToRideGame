@@ -52,6 +52,7 @@ public class GameController {
             ticketDeck.getTickets(2, player, kept);
         }
 
+
     }
 
     public Player getCurrentPlayer() {
