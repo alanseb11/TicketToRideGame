@@ -45,7 +45,7 @@ public class MapPanel extends JPanel {
         cityPositions = new HashMap<>();
 
         cityPositions.put(City.REGENTS_PARK, new Point(120, 100));
-        cityPositions.put(City.BAKER_STREET, new Point(180, 180));
+        cityPositions.put(City.BAKER_STREET, new Point(150, 180));
         cityPositions.put(City.BRITISH_MUSEUM, new Point(300, 240));
         cityPositions.put(City.HYDE_PARK, new Point(130, 480));
         cityPositions.put(City.BUCKINGHAM_PALACE, new Point(280, 520));
@@ -77,17 +77,28 @@ public class MapPanel extends JPanel {
                 // Middle
                 createRouteVisual(Colour.BLACK, City.KINGS_CROSS, City.BRITISH_MUSEUM, 2),
                 createRouteVisual(Colour.PINK, City.KINGS_CROSS, City.THE_CHARTERHOUSE, 3),
-                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 1),
+                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 1, -10),
+                createRouteVisual(Colour.MULTI, City.BRITISH_MUSEUM, City.COVENT_GARDEN, 1, 10),
                 createRouteVisual(Colour.BLUE, City.BRITISH_MUSEUM, City.THE_CHARTERHOUSE, 4),
                 createRouteVisual(Colour.GREEN, City.THE_CHARTERHOUSE, City.BRICK_LANE, 3),
-                createRouteVisual(Colour.MULTI, City.COVENT_GARDEN, City.ST_PAULS, 3),
-                createRouteVisual(Colour.PINK, City.COVENT_GARDEN, City.TRAFALGAR_SQUARE, 1),
+                createRouteVisual(Colour.MULTI, City.COVENT_GARDEN, City.ST_PAULS, 3,-10),
+                createRouteVisual(Colour.MULTI, City.COVENT_GARDEN, City.ST_PAULS, 3,10),
+                createRouteVisual(Colour.PINK, City.COVENT_GARDEN, City.TRAFALGAR_SQUARE, 1,-10),
+                createRouteVisual(Colour.BLACK, City.COVENT_GARDEN, City.TRAFALGAR_SQUARE, 1,10),
+                createRouteVisual(Colour.GREEN, City.COVENT_GARDEN, City.PICCADILLY_CIRCUS, 1,-10),
+                createRouteVisual(Colour.YELLOW, City.COVENT_GARDEN, City.PICCADILLY_CIRCUS, 1,10),
+                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.HYDE_PARK, 2,-10),
+                createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.HYDE_PARK, 2,10),
 
                 // Bottom left
-                createRouteVisual(Colour.ORANGE, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1),
-                createRouteVisual(Colour.YELLOW, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1),
+                createRouteVisual(Colour.ORANGE, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1,-10),
+                createRouteVisual(Colour.YELLOW, City.HYDE_PARK, City.BUCKINGHAM_PALACE, 1,10),
                 createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 2),
+                createRouteVisual(Colour.BLUE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,10),
+                createRouteVisual(Colour.ORANGE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,-10),
                 createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2),
+                createRouteVisual(Colour.BLUE, City.WATERLOO, City.BIG_BEN, 1),
+                createRouteVisual(Colour.MULTI, City.WATERLOO, City.TRAFALGAR_SQUARE, 2),
                 createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 2),
                 createRouteVisual(Colour.MULTI, City.TRAFALGAR_SQUARE, City.BIG_BEN, 1),
 
@@ -97,21 +108,28 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.PINK, City.WATERLOO, City.GLOBE_THEATRE, 2),
                 createRouteVisual(Colour.GREEN, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 2),
                 createRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3),
-                createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3),
-                createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3),
+                createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3,10),
+                createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3,-10),
                 createRouteVisual(Colour.BLUE, City.BRICK_LANE, City.TOWER_OF_LONDON, 3),
-                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1),
+                createRouteVisual(Colour.BLACK, City.ELEPHANT_CASTLE, City.TOWER_OF_LONDON, 4),
+                createRouteVisual(Colour.ORANGE, City.BRICK_LANE, City.ST_PAULS, 3),
+                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1,10),
+                createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1,-10),
                 createRouteVisual(Colour.BLACK, City.ST_PAULS, City.THE_CHARTERHOUSE, 1)
         };
     }
 
     private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB, int length) {
+        return createRouteVisual(colour, cityA, cityB, length, 0);
+    }
+
+    private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB, int length, int offset) {
         Route route = new Route(colour, cityA, cityB, length, null);
-        Rectangle[] segments = createSegmentsBetween(cityA, cityB, length);
+        Rectangle[] segments = createSegmentsBetween(cityA, cityB, length, offset);
         return new RouteVisual(route, segments);
     }
 
-    private Rectangle[] createSegmentsBetween(City cityA, City cityB, int length) {
+    private Rectangle[] createSegmentsBetween(City cityA, City cityB, int length, int offset) {
         Point start = cityPositions.get(cityA);
         Point end = cityPositions.get(cityB);
 
@@ -120,16 +138,40 @@ public class MapPanel extends JPanel {
         int width = 34;
         int height = 14;
 
+        double dx = end.x - start.x;
+        double dy = end.y - start.y;
+        double distance = Math.sqrt(dx * dx + dy * dy);
+
+        double offsetX = -dy / distance * offset;
+        double offsetY = dx / distance * offset;
+
         for (int i = 0; i < length; i++) {
             double t = (i + 1.0) / (length + 1.0);
 
-            int x = (int) (start.x + t * (end.x - start.x)) - width / 2;
-            int y = (int) (start.y + t * (end.y - start.y)) - height / 2;
+            int x = (int) (start.x + t * dx + offsetX) - width / 2;
+            int y = (int) (start.y + t * dy + offsetY) - height / 2;
 
             segments[i] = new Rectangle(x, y, width, height);
         }
 
         return segments;
+    }
+
+    private void drawRotatedSegment(Graphics2D g2, Rectangle segment, double angle, Color color) {
+        Graphics2D copy = (Graphics2D) g2.create();
+
+        int centerX = segment.x + segment.width / 2;
+        int centerY = segment.y + segment.height / 2;
+
+        copy.rotate(angle, centerX, centerY);
+
+        copy.setColor(color);
+        copy.fillRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
+
+        copy.setColor(Color.WHITE);
+        copy.drawRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
+
+        copy.dispose();
     }
 
     @Override
@@ -149,11 +191,12 @@ public class MapPanel extends JPanel {
             Color drawColor = getDrawColor(route);
 
             for (Rectangle segment : routeVisual.getSegments()) {
-                g2.setColor(drawColor);
-                g2.fillRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
+                Point start = cityPositions.get(route.getCityA());
+                Point end = cityPositions.get(route.getCityB());
 
-                g2.setColor(Color.WHITE);
-                g2.drawRoundRect(segment.x, segment.y, segment.width, segment.height, 8, 8);
+                double angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+                drawRotatedSegment(g2, segment, angle, drawColor);
 
                 if (controller.getSelectedRoute() == route) {
                     g2.setColor(Color.CYAN);
@@ -223,6 +266,8 @@ public class MapPanel extends JPanel {
         switch (colour) {
             case GREEN:
                 return Color.GREEN;
+            case BLUE:
+                return Color.BLUE;
             case YELLOW:
                 return Color.YELLOW;
             case ORANGE:
