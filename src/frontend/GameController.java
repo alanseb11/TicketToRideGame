@@ -14,6 +14,10 @@ public class GameController {
     private Route selectedRoute;
     private String message;
 
+    private Game game;
+    private boolean finalRoundStarted;
+    private int finalTurnsRemaining;
+
     private final TransportationDeck transportDeck;
     private final DestinationTicketCardDeck ticketDeck;
 
@@ -22,7 +26,9 @@ public class GameController {
         this.currentPlayerIndex = 0;
         this.selectedRoute = null;
         this.message = playerOne.getName() + "'s turn";
-
+        this.game = new Game(playerOne, playerTwo);
+        this.finalRoundStarted = false;
+        this.finalTurnsRemaining = -1;
         TransportationDeck.reset();
         DestinationTicketCardDeck.reset();
         transportDeck = TransportationDeck.getInstance();
@@ -227,11 +233,67 @@ public class GameController {
     }
 
     public void endTurn() {
+        Player playerWhoJustPlayed = getCurrentPlayer();
+
+        if (!finalRoundStarted && playerWhoJustPlayed.getBuses() <= 2) {
+            finalRoundStarted = true;
+            finalTurnsRemaining = players.length;
+            message += " Final round started!";
+        }
+
+        if (finalRoundStarted) {
+            finalTurnsRemaining--;
+
+            if (finalTurnsRemaining <= 0) {
+                endGame();
+                return;
+            }
+        }
+
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         message += " Next turn: " + getCurrentPlayer().getName();
     }
 
     private String formatCityName(String cityName) {
         return cityName.replace("_", " ");
+    }
+
+    private void endGame() {
+        for (Player player : players) {
+            player.calcLongestPath();
+        }
+
+        java.util.List<Player> winners = game.endGame();
+
+        StringBuilder result = new StringBuilder();
+
+        if (winners.size() == 1) {
+            result.append("Winner: ")
+                    .append(winners.get(0).getName())
+                    .append("\n\n");
+        } else {
+            result.append("Draw between:\n");
+            for (Player winner : winners) {
+                result.append("- ").append(winner.getName()).append("\n");
+            }
+            result.append("\n");
+        }
+
+        result.append("Final Scores:\n");
+        for (Player player : players) {
+            result.append(player.getName())
+                    .append(": ")
+                    .append(player.getPoints())
+                    .append(" points\n");
+        }
+
+        javax.swing.JOptionPane.showMessageDialog(
+                null,
+                result.toString(),
+                "Game Over",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE
+        );
+
+        message = "Game over.";
     }
 }

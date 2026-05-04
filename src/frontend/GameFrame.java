@@ -30,6 +30,10 @@ public class GameFrame extends JFrame {
         add(actionPanel, BorderLayout.SOUTH);
 
         setVisible(true);
+
         controller.setup();
+        playerInfoPanel.refresh();
+        mapPanel.repaint();
+        actionPanel.refresh();
     }
 }
