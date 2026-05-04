@@ -272,8 +272,10 @@ public class TransportationDeck extends Deck<TransportCard> {
         }
 
         // Unlock any locked face-up Buses for the next player's turn
-        for (TransportCard card : faceUpCards) {
-            card.setCanDraw(true);
+        if (drawsRemaining == 0 || choices.length >= 2) {
+            for (TransportCard card : faceUpCards) {
+                card.setCanDraw(true);
+            }
         }
     }
 
