@@ -36,7 +36,7 @@ public class Player {
         routesClaimed = new HashMap<>();
         destTicketCards = new ArrayList<>();
 
-        // TEMPORARY CITIES - TODO: NEED TO MOVE INTO GAME CLASS WHEN MADE
+
         City[] cities = {City.BAKER_STREET, City.COVENT_GARDEN, City.PICCADILLY_CIRCUS, City.BIG_BEN,
         City.BRICK_LANE, City.BRITISH_MUSEUM, City.BUCKINGHAM_PALACE, City.ELEPHANT_CASTLE,
         City.KINGS_CROSS, City.GLOBE_THEATRE, City.HYDE_PARK, City.THE_CHARTERHOUSE,

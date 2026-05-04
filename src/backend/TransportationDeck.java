@@ -143,7 +143,7 @@ public class TransportationDeck extends Deck<TransportCard> {
             discardPile.clear();
             Collections.shuffle(cards);
         }
-        return cards.removeFirst();
+        return cards.remove(0);
     }
 
     // ── Face-up management ────────────────────────────────────────────────────────

@@ -45,6 +45,7 @@ public class GameController {
             List<Integer> kept = chooseTickets(player, drawn, 2);
             ticketDeck.getTickets(2, player, kept);
         }
+
     }
 
     public Player getCurrentPlayer() {
@@ -211,7 +212,6 @@ public class GameController {
     private void giveRandomTransportCard(Player player) {
         Colour[] drawableColours = {
                 Colour.GREEN,
-                Colour.BLUE,
                 Colour.YELLOW,
                 Colour.ORANGE,
                 Colour.PINK,
