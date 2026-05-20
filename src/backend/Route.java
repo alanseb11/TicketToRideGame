@@ -16,12 +16,23 @@ public class Route{
 
     private Route doubleRoute;
 
+    private boolean ferry;
+
+    private int requiredLocomotives;
+
     public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
+        this(colour, cityA, cityB, length, doubleRoute, false, 0);
+    }
+
+    public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute,
+                 boolean ferry, int requiredLocomotives) {
         this.colour = colour;
         this.cityA = cityA;
         this.cityB = cityB;
         this.length = length;
         this.doubleRoute = doubleRoute;
+        this.ferry = ferry;
+        this.requiredLocomotives = requiredLocomotives;
     }
 
     /**
@@ -59,6 +70,10 @@ public class Route{
 
         // Initialise the cards Player can use to claim this route
         HashMap<Colour, Integer> cardsToUse = new HashMap<>();
+
+        if (ferry) {
+            return canPlayerClaimFerry(player);
+        }
 
         // Player may only claim if they have enough trains to place along the route
         if (player.getBuses() >= length) {
@@ -118,6 +133,52 @@ public class Route{
         return null;
     }
 
+    private HashMap<Colour, Integer> canPlayerClaimFerry(Player player) {
+        HashMap<Colour, Integer> transportCards = player.getTransportCards();
+        HashMap<Colour, Integer> cardsToUse = new HashMap<>();
+
+        if (player.getBuses() < length) {
+            return null;
+        }
+
+        if (doubleRoute != null && doubleRoute.owner != null) {
+            return null;
+        }
+
+        int normalCardsRequired = length - requiredLocomotives;
+
+        int locomotiveCards = transportCards.get(Colour.MULTI);
+        int sameColourCards = transportCards.get(colour);
+
+        if (locomotiveCards < requiredLocomotives) {
+            return null;
+        }
+
+        cardsToUse.put(Colour.MULTI, requiredLocomotives);
+
+        if (sameColourCards >= normalCardsRequired) {
+            if (normalCardsRequired > 0) {
+                cardsToUse.put(colour, normalCardsRequired);
+            }
+
+            return cardsToUse;
+        }
+
+        int colourShortage = normalCardsRequired - sameColourCards;
+        int remainingLocomotives = locomotiveCards - requiredLocomotives;
+
+        if (remainingLocomotives >= colourShortage) {
+            if (sameColourCards > 0) {
+                cardsToUse.put(colour, sameColourCards);
+            }
+
+            cardsToUse.put(Colour.MULTI, requiredLocomotives + colourShortage);
+            return cardsToUse;
+        }
+
+        return null;
+    }
+
     /**
      * Getter method for Route colour
      *
@@ -152,4 +213,11 @@ public class Route{
         this.owner = owner;
     }
 
+    public boolean isFerry() {
+        return ferry;
+    }
+
+    public int getRequiredLocomotives() {
+        return requiredLocomotives;
+    }
 }

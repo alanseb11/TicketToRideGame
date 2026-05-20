@@ -105,7 +105,7 @@ public class MapPanel extends JPanel {
                 // Bottom / right
                 createRouteVisual(Colour.YELLOW, City.BIG_BEN, City.ELEPHANT_CASTLE, 3),
                 createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 2),
-                createRouteVisual(Colour.PINK, City.WATERLOO, City.GLOBE_THEATRE, 2),
+                createFerryRouteVisual(Colour.PINK, City.WATERLOO, City.GLOBE_THEATRE, 2, 1),
                 createRouteVisual(Colour.GREEN, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 2),
                 createRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3),
                 createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3,10),
@@ -119,12 +119,28 @@ public class MapPanel extends JPanel {
         };
     }
 
+    // Normal route
     private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB, int length) {
-        return createRouteVisual(colour, cityA, cityB, length, 0);
+        return createRouteVisual(colour, cityA, cityB, length, 0, false, 0);
     }
 
-    private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB, int length, int offset) {
-        Route route = new Route(colour, cityA, cityB, length, null);
+    // Double/offset route
+    private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB,
+                                          int length, int offset) {
+        return createRouteVisual(colour, cityA, cityB, length, offset, false, 0);
+    }
+
+    // Ferry route
+    private RouteVisual createFerryRouteVisual(Colour colour, City cityA, City cityB,
+                                               int length, int requiredLocomotives) {
+        return createRouteVisual(colour, cityA, cityB, length, 0, true, requiredLocomotives);
+    }
+
+    // Main internal method
+    private RouteVisual createRouteVisual(Colour colour, City cityA, City cityB,
+                                          int length, int offset,
+                                          boolean ferry, int requiredLocomotives) {
+        Route route = new Route(colour, cityA, cityB, length, null, ferry, requiredLocomotives);
         Rectangle[] segments = createSegmentsBetween(cityA, cityB, length, offset);
         return new RouteVisual(route, segments);
     }
@@ -189,14 +205,28 @@ public class MapPanel extends JPanel {
         for (RouteVisual routeVisual : routeVisuals) {
             Route route = routeVisual.getRoute();
             Color drawColor = getDrawColor(route);
+            Rectangle[] segments = routeVisual.getSegments();
 
-            for (Rectangle segment : routeVisual.getSegments()) {
+            for (int i = 0; i < segments.length; i++) {
+                Rectangle segment = segments[i];
                 Point start = cityPositions.get(route.getCityA());
                 Point end = cityPositions.get(route.getCityB());
 
                 double angle = Math.atan2(end.y - start.y, end.x - start.x);
 
                 drawRotatedSegment(g2, segment, angle, drawColor);
+                if (route.isFerry()
+                        && i < route.getRequiredLocomotives()) {
+
+                    g2.setColor(Color.WHITE);
+                    g2.setFont(new Font("Arial", Font.BOLD, 14));
+
+                    g2.drawString(
+                            "🚂",
+                            segment.x + 7,
+                            segment.y + 12
+                    );
+                }
 
                 if (controller.getSelectedRoute() == route) {
                     g2.setColor(Color.CYAN);
