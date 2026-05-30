@@ -332,7 +332,7 @@ public class GameController {
     }
 
     public void loadGame() {
-        currentPlayerIndex = GameSaveManager.loadCurrentPlayerIndex("saved_game.txt");
+        currentPlayerIndex = GameSaveManager.loadGame(players, "saved_game.txt");
         message = "Game loaded successfully from saved_game.txt.";
     }
 }

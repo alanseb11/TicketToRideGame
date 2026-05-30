@@ -240,6 +240,18 @@ public class Player {
         return colour;
     }
 
+    public void setBuses(int buses) {
+        this.buses = buses;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public void setTransportCardCount(Colour colour, int amount) {
+        transportCards.put(colour, amount);
+    }
+
     public ArrayList<DestinationTicket> getDestTicketCards() {
         return destTicketCards;
     }
