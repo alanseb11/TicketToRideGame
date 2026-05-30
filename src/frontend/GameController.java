@@ -75,6 +75,10 @@ public class GameController {
         return message;
     }
 
+    public Player[] getPlayers() {
+        return players;
+    }
+
     public void selectRoute(Route route) {
         selectedRoute = route;
 
@@ -320,5 +324,10 @@ public class GameController {
         );
 
         message = "Game over.";
+    }
+
+    public void saveGame() {
+        GameSaveManager.saveGame(players, currentPlayerIndex, "saved_game.txt");
+        message = "Game saved successfully to saved_game.txt.";
     }
 }

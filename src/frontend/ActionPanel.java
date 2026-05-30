@@ -23,6 +23,7 @@ public class ActionPanel extends JPanel {
         JButton claimRouteButton = new JButton("Claim Selected Route");
         JButton drawTicketButton = new JButton("Draw Destination Ticket");
         JButton endTurnButton = new JButton("End Turn");
+        JButton saveButton = new JButton("Save Game");
 
         messageLabel = new JLabel(controller.getMessage());
 
@@ -46,10 +47,16 @@ public class ActionPanel extends JPanel {
             refresh();
         });
 
+        saveButton.addActionListener(e -> {
+            controller.saveGame();
+            refresh();
+        });
+
         add(drawCardButton);
         add(claimRouteButton);
         add(drawTicketButton);
         add(endTurnButton);
+        add(saveButton);
         add(messageLabel);
     }
 
@@ -58,4 +65,5 @@ public class ActionPanel extends JPanel {
         mapPanel.repaint();
         playerInfoPanel.refresh();
     }
+
 }
