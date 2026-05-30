@@ -315,6 +315,27 @@ public class MapPanel extends JPanel {
         }
     }
 
+    public Route findRoute(City cityA, City cityB) {
+        for (RouteVisual routeVisual : routeVisuals) {
+            Route route = routeVisual.getRoute();
+
+            boolean sameDirection = route.getCityA() == cityA && route.getCityB() == cityB;
+            boolean oppositeDirection = route.getCityA() == cityB && route.getCityB() == cityA;
+
+            if (sameDirection || oppositeDirection) {
+                return route;
+            }
+        }
+
+        return null;
+    }
+
+    public void clearRouteOwners() {
+        for (RouteVisual routeVisual : routeVisuals) {
+            routeVisual.getRoute().setOwner(null);
+        }
+    }
+
     private Color convertStringToColor(String colour) {
         switch (colour.toLowerCase()) {
             case "blue":

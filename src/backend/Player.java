@@ -252,6 +252,17 @@ public class Player {
         transportCards.put(colour, amount);
     }
 
+    public void clearClaimedRoutes() {
+        for (City city : routesClaimed.keySet()) {
+            routesClaimed.get(city).clear();
+        }
+    }
+
+    public void addClaimedRouteWithoutCost(Route route) {
+        routesClaimed.get(route.getCityA()).add(route);
+        routesClaimed.get(route.getCityB()).add(route);
+    }
+
     public ArrayList<DestinationTicket> getDestTicketCards() {
         return destTicketCards;
     }

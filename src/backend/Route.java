@@ -270,4 +270,22 @@ public class Route{
     public int getRequiredLocomotives() {
         return requiredLocomotives;
     }
+
+    public String getClaimFailureReason(Player player) {
+        if (player.getBuses() < length) {
+            return "You do not have enough buses to claim this route.";
+        }
+
+        if (owner != null) {
+            return "This route has already been claimed.";
+        }
+
+        if (ferry) {
+            return "You need " + requiredLocomotives
+                    + " locomotive card(s) for this ferry route. "
+                    + "Missing locomotives can be replaced with any 3 cards.";
+        }
+
+        return "You do not have enough matching transport cards to claim this route.";
+    }
 }

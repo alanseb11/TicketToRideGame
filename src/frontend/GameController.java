@@ -13,6 +13,7 @@ public class GameController {
     private int currentPlayerIndex;
     private Route selectedRoute;
     private String message;
+    private MapPanel mapPanel;
 
     private Game game;
     private boolean finalRoundStarted;
@@ -79,6 +80,10 @@ public class GameController {
         return players;
     }
 
+    public void setMapPanel(MapPanel mapPanel) {
+        this.mapPanel = mapPanel;
+    }
+
     public void selectRoute(Route route) {
         selectedRoute = route;
 
@@ -112,7 +117,7 @@ public class GameController {
 
         // If no cards able to be used, cannot claim
         if (cardsToUse == null) {
-            message = currentPlayer.getName() + " does not have enough cards or buses.";
+            message = selectedRoute.getClaimFailureReason(currentPlayer);;
             return;
         }
 
@@ -332,7 +337,8 @@ public class GameController {
     }
 
     public void loadGame() {
-        currentPlayerIndex = GameSaveManager.loadGame(players, "saved_game.txt");
+        currentPlayerIndex = GameSaveManager.loadGame(players, mapPanel, "saved_game.txt");
+        selectedRoute = null;
         message = "Game loaded successfully from saved_game.txt.";
     }
 }

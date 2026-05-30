@@ -22,6 +22,8 @@ public class GameFrame extends JFrame {
         controller = new GameController(playerOne, playerTwo);
 
         mapPanel = new MapPanel(controller);
+        controller.setMapPanel(mapPanel);
+
         playerInfoPanel = new PlayerInfoPanel(controller);
         actionPanel = new ActionPanel(controller, mapPanel, playerInfoPanel);
 
