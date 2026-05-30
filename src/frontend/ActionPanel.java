@@ -10,7 +10,6 @@ public class ActionPanel extends JPanel {
     private final GameController controller;
     private final MapPanel mapPanel;
     private final PlayerInfoPanel playerInfoPanel;
-    private final JLabel messageLabel;
 
     public ActionPanel(GameController controller, MapPanel mapPanel, PlayerInfoPanel playerInfoPanel) {
         this.controller = controller;
@@ -26,7 +25,6 @@ public class ActionPanel extends JPanel {
         JButton loadButton = new JButton("Load Game");
         JButton saveButton = new JButton("Save Game");
 
-        messageLabel = new JLabel(controller.getMessage());
 
         drawCardButton.addActionListener(e -> {
             controller.drawTransportCard();
@@ -64,11 +62,10 @@ public class ActionPanel extends JPanel {
         add(endTurnButton);
         add(saveButton);
         add(loadButton);
-        add(messageLabel);
     }
 
     public void refresh() {
-        messageLabel.setText(controller.getMessage());
+        controller.getMessage();
         mapPanel.repaint();
         playerInfoPanel.refresh();
     }

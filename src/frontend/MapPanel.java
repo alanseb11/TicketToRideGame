@@ -16,11 +16,13 @@ public class MapPanel extends JPanel {
     private HashMap<City, Point> cityPositions;
     private RouteVisual[] routeVisuals;
     private Image locomotiveIcon;
+    private final Image starIcon;
 
     public MapPanel(GameController controller) {
         this.controller = controller;
         setBackground(new Color(230, 220, 190));
         locomotiveIcon = new ImageIcon("src/resources/locomotive_18x12.png").getImage();
+        starIcon = new ImageIcon("src/resources/star.png").getImage();
         createCityPositions();
         createRouteVisuals();
         setupMouseListener();
@@ -72,7 +74,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.BLUE, City.REGENTS_PARK, City.BAKER_STREET, 2),
                 createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 3),
                 createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 4),
-                createRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4),
+                createLandmarkRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4, "DETECTIVE_CHOICE"),
                 createRouteVisual(Colour.MULTI, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
                 createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BRITISH_MUSEUM, 2),
 
@@ -98,7 +100,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 2),
                 createRouteVisual(Colour.BLUE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,10),
                 createRouteVisual(Colour.ORANGE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,-10),
-                createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2),
+                createLandmarkRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2, "POINTS_OR_CARDS"),
                 createRouteVisual(Colour.BLUE, City.WATERLOO, City.BIG_BEN, 1),
                 createFerryRouteVisual(Colour.MULTI, City.WATERLOO, City.TRAFALGAR_SQUARE, 2,2),
                 createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 2),
@@ -112,7 +114,7 @@ public class MapPanel extends JPanel {
                 createFerryRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3,2),
                 createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3,10),
                 createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3,-10),
-                createRouteVisual(Colour.BLUE, City.BRICK_LANE, City.TOWER_OF_LONDON, 3),
+                createLandmarkRouteVisual(Colour.BLUE, City.TOWER_OF_LONDON, City.BRICK_LANE, 3, "STEAL_CARD"),
                 createRouteVisual(Colour.BLACK, City.ELEPHANT_CASTLE, City.TOWER_OF_LONDON, 4),
                 createRouteVisual(Colour.ORANGE, City.BRICK_LANE, City.ST_PAULS, 3),
                 createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1,10),
@@ -217,6 +219,19 @@ public class MapPanel extends JPanel {
                 double angle = Math.atan2(end.y - start.y, end.x - start.x);
 
                 drawRotatedSegment(g2, segment, angle, drawColor);
+
+                if (route.isLandmarkRoute()) {
+
+                    g2.drawImage(
+                            starIcon,
+                            segment.x + 9,
+                            segment.y + 1,
+                            12,
+                            12,
+                            null
+                    );
+                }
+
                 if (route.isFerry()
                         && i < route.getRequiredLocomotives()) {
 
@@ -334,6 +349,21 @@ public class MapPanel extends JPanel {
         for (RouteVisual routeVisual : routeVisuals) {
             routeVisual.getRoute().setOwner(null);
         }
+    }
+
+    private RouteVisual createLandmarkRouteVisual(
+            Colour colour,
+            City cityA,
+            City cityB,
+            int length,
+            String effect
+    ) {
+        RouteVisual routeVisual =
+                createRouteVisual(colour, cityA, cityB, length);
+
+        routeVisual.getRoute().makeLandmarkRoute(effect);
+
+        return routeVisual;
     }
 
     private Color convertStringToColor(String colour) {

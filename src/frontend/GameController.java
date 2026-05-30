@@ -21,6 +21,7 @@ public class GameController {
 
     private final TransportationDeck transportDeck;
     private final DestinationTicketCardDeck ticketDeck;
+    private JLabel statusLabel;
 
     public GameController(Player playerOne, Player playerTwo) {
         this.players = new Player[] {playerOne, playerTwo};
@@ -73,6 +74,7 @@ public class GameController {
     }
 
     public String getMessage() {
+        updateStatus();
         return message;
     }
 
@@ -86,6 +88,16 @@ public class GameController {
 
     public void setMapPanel(MapPanel mapPanel) {
         this.mapPanel = mapPanel;
+    }
+
+    public void setStatusLabel(JLabel statusLabel) {
+        this.statusLabel = statusLabel;
+    }
+
+    private void updateStatus() {
+        if (statusLabel != null) {
+            statusLabel.setText(message);
+        }
     }
 
     public void selectRoute(Route route) {
@@ -130,10 +142,14 @@ public class GameController {
         // Call claim route logic for points etc.
         currentPlayer.claimRoute(selectedRoute, cardsToUse);
 
-        message = currentPlayer.getName() + " claimed "
-                + formatCityName(selectedRoute.getCityA().name())
-                + " to "
-                + formatCityName(selectedRoute.getCityB().name());
+        if (selectedRoute.isLandmarkRoute()) {
+            applyLandmarkEffect(selectedRoute, currentPlayer);
+        } else {
+            message = currentPlayer.getName() + " claimed "
+                    + formatCityName(selectedRoute.getCityA().name())
+                    + " to "
+                    + formatCityName(selectedRoute.getCityB().name());
+        }
 
         selectedRoute = null;
         endTurn();
@@ -350,4 +366,120 @@ public class GameController {
                 "Game loaded successfully. Current turn: "
                         + getCurrentPlayer().getName();
     }
+
+    private void applyLandmarkEffect(Route route, Player currentPlayer) {
+
+        switch (route.getLandmarkEffect()) {
+
+            case "POINTS_OR_CARDS":
+
+                int choice = JOptionPane.showOptionDialog(
+                        null,
+                        "Choose your landmark reward.",
+                        "Landmark Route",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new String[]{"+2 Points", "Draw 2 Cards"},
+                        null
+                );
+
+                if (choice == 0) {
+                    currentPlayer.addPoints(2);
+
+                    message = currentPlayer.getName()
+                            + " activated a landmark route and gained +2 bonus points.";
+                } else {
+
+                    drawBonusTransportCard(currentPlayer);
+                    drawBonusTransportCard(currentPlayer);
+
+                    message = currentPlayer.getName()
+                            + " activated a landmark route and drew 2 bonus transport cards.";
+                }
+
+                break;
+
+            case "STEAL_CARD":
+
+                stealRandomCard(currentPlayer);
+
+                break;
+
+            case "DETECTIVE_CHOICE":
+
+                int detectiveChoice = JOptionPane.showOptionDialog(
+                        null,
+                        "Baker Street Detective Bonus: choose your reward.",
+                        "Landmark Route",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        new String[]{"Draw 1 Card", "+1 Point"},
+                        null
+                );
+
+                if (detectiveChoice == 0) {
+                    drawBonusTransportCard(currentPlayer);
+
+                    message = currentPlayer.getName()
+                            + " used the Baker Street Detective Bonus and drew 1 transport card.";
+                } else {
+                    currentPlayer.addPoints(1);
+
+                    message = currentPlayer.getName()
+                            + " used the Baker Street Detective Bonus and gained +1 point.";
+                }
+
+                break;
+
+            default:
+
+                message = currentPlayer.getName()
+                        + " claimed a landmark route.";
+
+                break;
+        }
+    }
+
+    private void drawBonusTransportCard(Player player) {
+        transportDeck.draw(player, new int[]{-1});
+    }
+
+    private void stealRandomCard(Player thief) {
+        Player victim = players[0] == thief ? players[1] : players[0];
+
+        ArrayList<Colour> availableColours = new ArrayList<>();
+
+        for (Colour colour : victim.getTransportCards().keySet()) {
+            int count = victim.getTransportCards().get(colour);
+
+            for (int i = 0; i < count; i++) {
+                availableColours.add(colour);
+            }
+        }
+
+        if (availableColours.isEmpty()) {
+            message = thief.getName() + " activated a landmark route, but "
+                    + victim.getName() + " had no cards to steal.";
+            return;
+        }
+
+        int randomIndex = (int) (Math.random() * availableColours.size());
+        Colour stolenColour = availableColours.get(randomIndex);
+
+        victim.setTransportCardCount(
+                stolenColour,
+                victim.getTransportCards().get(stolenColour) - 1
+        );
+
+        thief.setTransportCardCount(
+                stolenColour,
+                thief.getTransportCards().get(stolenColour) + 1
+        );
+
+        message = thief.getName() + " activated a landmark route and stole 1 "
+                + stolenColour + " card from " + victim.getName() + ".";
+    }
+
 }

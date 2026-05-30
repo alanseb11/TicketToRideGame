@@ -20,6 +20,10 @@ public class Route{
 
     private int requiredLocomotives;
 
+    private boolean landmarkRoute;
+
+    private String landmarkEffect;
+
     public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
         this(colour, cityA, cityB, length, doubleRoute, false, 0);
     }
@@ -33,6 +37,8 @@ public class Route{
         this.doubleRoute = doubleRoute;
         this.ferry = ferry;
         this.requiredLocomotives = requiredLocomotives;
+        this.landmarkRoute = false;
+        this.landmarkEffect = "";
     }
 
     /**
@@ -269,6 +275,19 @@ public class Route{
 
     public int getRequiredLocomotives() {
         return requiredLocomotives;
+    }
+
+    public void makeLandmarkRoute(String effect) {
+        this.landmarkRoute = true;
+        this.landmarkEffect = effect;
+    }
+
+    public boolean isLandmarkRoute() {
+        return landmarkRoute;
+    }
+
+    public String getLandmarkEffect() {
+        return landmarkEffect;
     }
 
     public String getClaimFailureReason(Player player) {
