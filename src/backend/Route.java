@@ -204,36 +204,37 @@ public class Route{
             HashMap<Colour, Integer> cardsToUse,
             int substituteCardsNeeded
     ) {
-        int remainingNeeded = substituteCardsNeeded;
+        int locomotivesToSubstitute = substituteCardsNeeded / 3;
 
-        for (Colour cardColour : transportCards.keySet()) {
-            if (cardColour == Colour.MULTI) {
-                continue;
+        for (int i = 0; i < locomotivesToSubstitute; i++) {
+            boolean foundSubstituteSet = false;
+
+            for (Colour cardColour : transportCards.keySet()) {
+                if (cardColour == Colour.MULTI) {
+                    continue;
+                }
+
+                int cardsHeld = transportCards.get(cardColour);
+                int alreadyUsed = cardsToUse.getOrDefault(cardColour, 0);
+                int availableCards = cardsHeld - alreadyUsed;
+
+                if (availableCards >= 3) {
+                    cardsToUse.put(
+                            cardColour,
+                            cardsToUse.getOrDefault(cardColour, 0) + 3
+                    );
+
+                    foundSubstituteSet = true;
+                    break;
+                }
             }
 
-            int cardsHeld = transportCards.get(cardColour);
-            int alreadyUsed = cardsToUse.getOrDefault(cardColour, 0);
-            int availableCards = cardsHeld - alreadyUsed;
-
-            if (availableCards <= 0) {
-                continue;
-            }
-
-            int cardsUsed = Math.min(availableCards, remainingNeeded);
-
-            cardsToUse.put(
-                    cardColour,
-                    cardsToUse.getOrDefault(cardColour, 0) + cardsUsed
-            );
-
-            remainingNeeded -= cardsUsed;
-
-            if (remainingNeeded == 0) {
-                return true;
+            if (!foundSubstituteSet) {
+                return false;
             }
         }
 
-        return false;
+        return true;
     }
     /**
      * Getter method for Route colour
