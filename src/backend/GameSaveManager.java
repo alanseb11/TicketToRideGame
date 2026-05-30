@@ -19,6 +19,8 @@ public class GameSaveManager {
                 writer.println("PLAYER=" + i);
                 writer.println("POINTS=" + player.getPoints());
                 writer.println("BUSES=" + player.getBuses());
+                writer.println("NAME=" + player.getName());
+                writer.println("COLOUR=" + player.getColour());
 
                 writer.println("CARDS_START");
                 for (Colour colour : player.getTransportCards().keySet()) {
@@ -87,6 +89,15 @@ public class GameSaveManager {
                 } else if (line.equals("CARDS_END")) {
                     readingCards = false;
 
+                } else if (line.startsWith("NAME=")) {
+                    players[currentPlayerBeingLoaded].setName(
+                            line.substring("NAME=".length())
+                    );
+
+                } else if (line.startsWith("COLOUR=")) {
+                    players[currentPlayerBeingLoaded].setColour(
+                            line.substring("COLOUR=".length())
+                    );
                 } else if (line.equals("ROUTES_START")) {
                     readingRoutes = true;
 

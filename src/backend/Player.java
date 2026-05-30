@@ -240,6 +240,14 @@ public class Player {
         return colour;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColour(String colour) {
+        this.colour = colour;
+    }
+
     public void setBuses(int buses) {
         this.buses = buses;
     }

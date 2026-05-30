@@ -13,6 +13,10 @@ public class GameFrame extends JFrame {
     private final ActionPanel actionPanel;
 
     public GameFrame(Player playerOne, Player playerTwo) {
+        this(playerOne, playerTwo, false);
+    }
+
+    public GameFrame(Player playerOne, Player playerTwo, boolean loadFromSave) {
         setTitle("Train To Ride");
         setSize(1200, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,7 +37,13 @@ public class GameFrame extends JFrame {
 
         setVisible(true);
 
-        controller.setup();
+        if (loadFromSave) {
+            controller.prepareLoadedGame();
+            controller.loadGame();
+        } else {
+            controller.setup();
+        }
+
         playerInfoPanel.refresh();
         mapPanel.repaint();
         actionPanel.refresh();

@@ -80,6 +80,10 @@ public class GameController {
         return players;
     }
 
+    public void prepareLoadedGame() {
+        transportDeck.turnFaceUp();
+    }
+
     public void setMapPanel(MapPanel mapPanel) {
         this.mapPanel = mapPanel;
     }
@@ -117,7 +121,7 @@ public class GameController {
 
         // If no cards able to be used, cannot claim
         if (cardsToUse == null) {
-            message = selectedRoute.getClaimFailureReason(currentPlayer);;
+            message = selectedRoute.getClaimFailureReason(currentPlayer);
             return;
         }
 
@@ -337,8 +341,13 @@ public class GameController {
     }
 
     public void loadGame() {
-        currentPlayerIndex = GameSaveManager.loadGame(players, mapPanel, "saved_game.txt");
+        currentPlayerIndex =
+                GameSaveManager.loadGame(players, mapPanel, "saved_game.txt");
+
         selectedRoute = null;
-        message = "Game loaded successfully from saved_game.txt.";
+
+        message =
+                "Game loaded successfully. Current turn: "
+                        + getCurrentPlayer().getName();
     }
 }

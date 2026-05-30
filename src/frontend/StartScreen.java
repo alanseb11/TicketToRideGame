@@ -24,7 +24,7 @@ public class StartScreen extends JFrame {
     }
 
     private void setupUI() {
-        JPanel mainPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        JPanel mainPanel = new JPanel(new GridLayout(7, 2, 10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         JLabel titleLabel = new JLabel("Start Game");
@@ -40,7 +40,10 @@ public class StartScreen extends JFrame {
         playerTwoColourBox.setSelectedItem("red");
 
         JButton startButton = new JButton("Start Game");
+        JButton loadButton = new JButton("Load Saved Game");
+
         startButton.addActionListener(e -> startGame());
+        loadButton.addActionListener(e -> loadSavedGame());
 
         add(titleLabel, BorderLayout.NORTH);
 
@@ -58,6 +61,9 @@ public class StartScreen extends JFrame {
 
         mainPanel.add(new JLabel(""));
         mainPanel.add(startButton);
+
+        mainPanel.add(new JLabel(""));
+        mainPanel.add(loadButton);
 
         add(mainPanel, BorderLayout.CENTER);
     }
@@ -84,5 +90,13 @@ public class StartScreen extends JFrame {
 
         dispose();
         new GameFrame(playerOne, playerTwo);
+    }
+
+    private void loadSavedGame() {
+        Player playerOne = new Player("Player 1", "blue");
+        Player playerTwo = new Player("Player 2", "red");
+
+        dispose();
+        new GameFrame(playerOne, playerTwo, true);
     }
 }
