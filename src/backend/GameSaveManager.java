@@ -29,4 +29,20 @@ public class GameSaveManager {
             throw new RuntimeException("Could not save game.", e);
         }
     }
+
+    public static int loadCurrentPlayerIndex(String fileName) {
+        try (java.util.Scanner scanner = new java.util.Scanner(new java.io.File(fileName))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+
+                if (line.startsWith("CURRENT_PLAYER=")) {
+                    return Integer.parseInt(line.substring("CURRENT_PLAYER=".length()));
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Could not load game.", e);
+        }
+
+        return 0;
+    }
 }
