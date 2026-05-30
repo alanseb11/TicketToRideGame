@@ -22,7 +22,7 @@ public class Route{
 
     private boolean landmarkRoute;
 
-    private String landmarkEffect;
+    private LandmarkEffect landmarkEffect;
 
     public Route(Colour colour, City cityA, City cityB, int length, Route doubleRoute) {
         this(colour, cityA, cityB, length, doubleRoute, false, 0);
@@ -38,7 +38,7 @@ public class Route{
         this.ferry = ferry;
         this.requiredLocomotives = requiredLocomotives;
         this.landmarkRoute = false;
-        this.landmarkEffect = "";
+        this.landmarkEffect = LandmarkEffect.NONE;
     }
 
     /**
@@ -277,7 +277,7 @@ public class Route{
         return requiredLocomotives;
     }
 
-    public void makeLandmarkRoute(String effect) {
+    public void makeLandmarkRoute(LandmarkEffect effect) {
         this.landmarkRoute = true;
         this.landmarkEffect = effect;
     }
@@ -286,7 +286,7 @@ public class Route{
         return landmarkRoute;
     }
 
-    public String getLandmarkEffect() {
+    public LandmarkEffect getLandmarkEffect() {
         return landmarkEffect;
     }
 

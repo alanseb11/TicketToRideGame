@@ -3,7 +3,6 @@ package frontend;
 import backend.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
@@ -22,6 +21,7 @@ public class GameController {
     private final TransportationDeck transportDeck;
     private final DestinationTicketCardDeck ticketDeck;
     private JLabel statusLabel;
+    private final GameDialogService dialogService;
 
     public GameController(Player playerOne, Player playerTwo) {
         this.players = new Player[] {playerOne, playerTwo};
@@ -31,10 +31,13 @@ public class GameController {
         this.game = new Game(playerOne, playerTwo);
         this.finalRoundStarted = false;
         this.finalTurnsRemaining = -1;
+        dialogService = new GameDialogService();
+
         TransportationDeck.reset();
         DestinationTicketCardDeck.reset();
         transportDeck = TransportationDeck.getInstance();
         ticketDeck    = DestinationTicketCardDeck.getInstance();
+
     }
 
     /**
@@ -50,7 +53,7 @@ public class GameController {
         // Each player must keep at least 2 of their 3 drawn starting tickets
         for (Player player : players) {
             List<DestinationTicket> drawn = ticketDeck.getTickets(2, player);
-            List<Integer> kept = chooseTickets(player, drawn, 2);
+            List<Integer> kept = dialogService.chooseTickets(player, drawn, 2);
             ticketDeck.getTickets(2, player, kept);
         }
 
@@ -218,72 +221,12 @@ public class GameController {
             return;
         }
 
-        List<Integer> kept = chooseTickets(current, drawn, 1);
+        List<Integer> kept = dialogService.chooseTickets(current, drawn, 1);
         ticketDeck.getTickets(1, current, kept);
         message = current.getName() + " drew destination tickets.";
         endTurn();
     }
 
-
-    private void dealStartingCards() {
-        for (Player player : players) {
-            for (int i = 0; i < 4; i++) {
-                giveRandomTransportCard(player);
-            }
-        }
-    }
-
-    private List<Integer> chooseTickets(Player player,
-                                        List<DestinationTicket> tickets, int min) {
-        JCheckBox[] boxes = new JCheckBox[tickets.size()];
-        JPanel panel = new JPanel(new GridLayout(tickets.size() + 1, 1));
-        panel.add(new JLabel(player.getName() + " — keep at least " + min + ":"));
-
-        for (int i = 0; i < tickets.size(); i++) {
-            DestinationTicket t = tickets.get(i);
-            String label = formatCityName(t.getCityA().name())
-                    + "  →  " + formatCityName(t.getCityB().name())
-                    + "  (" + t.getPoints() + " pts)";
-            boxes[i] = new JCheckBox(label, true);
-            panel.add(boxes[i]);
-        }
-        while (true) {
-            JOptionPane.showMessageDialog(
-                    null, panel, "Destination Tickets", JOptionPane.PLAIN_MESSAGE);
-
-            List<Integer> kept = new ArrayList<>();
-            for (int i = 0; i < boxes.length; i++) {
-                if (boxes[i].isSelected()) kept.add(i);
-            }
-
-            if (kept.size() >= min) {
-                return kept;
-            }
-
-            JOptionPane.showMessageDialog(
-                    null,
-                    "You must keep at least " + min + " ticket(s).",
-                    "Invalid Selection",
-                    JOptionPane.WARNING_MESSAGE);
-        }
-    }
-
-    private void giveRandomTransportCard(Player player) {
-        Colour[] drawableColours = {
-                Colour.GREEN,
-                Colour.YELLOW,
-                Colour.ORANGE,
-                Colour.PINK,
-                Colour.BLACK,
-                Colour.MULTI
-        };
-
-        int randomIndex = (int) (Math.random() * drawableColours.length);
-        Colour drawnColour = drawableColours[randomIndex];
-
-        int currentAmount = player.getTransportCards().getOrDefault(drawnColour, 0);
-        player.getTransportCards().put(drawnColour, currentAmount + 1);
-    }
 
     public void endTurn() {
         Player playerWhoJustPlayed = getCurrentPlayer();
@@ -371,7 +314,7 @@ public class GameController {
 
         switch (route.getLandmarkEffect()) {
 
-            case "POINTS_OR_CARDS":
+            case POINTS_OR_CARDS:
 
                 int choice = JOptionPane.showOptionDialog(
                         null,
@@ -400,13 +343,13 @@ public class GameController {
 
                 break;
 
-            case "STEAL_CARD":
+            case STEAL_CARD:
 
                 stealRandomCard(currentPlayer);
 
                 break;
 
-            case "DETECTIVE_CHOICE":
+            case DETECTIVE_CHOICE:
 
                 int detectiveChoice = JOptionPane.showOptionDialog(
                         null,

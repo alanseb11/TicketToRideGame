@@ -2,6 +2,7 @@ package frontend;
 
 import backend.City;
 import backend.Colour;
+import backend.LandmarkEffect;
 import backend.Route;
 
 import javax.swing.*;
@@ -74,7 +75,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.BLUE, City.REGENTS_PARK, City.BAKER_STREET, 2),
                 createRouteVisual(Colour.YELLOW, City.REGENTS_PARK, City.BRITISH_MUSEUM, 3),
                 createRouteVisual(Colour.ORANGE, City.BAKER_STREET, City.BRITISH_MUSEUM, 4),
-                createLandmarkRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4, "DETECTIVE_CHOICE"),
+                createLandmarkRouteVisual(Colour.BLACK, City.HYDE_PARK, City.BAKER_STREET, 4, LandmarkEffect.DETECTIVE_CHOICE),
                 createRouteVisual(Colour.MULTI, City.BAKER_STREET, City.PICCADILLY_CIRCUS, 4),
                 createRouteVisual(Colour.MULTI, City.PICCADILLY_CIRCUS, City.BRITISH_MUSEUM, 2),
 
@@ -100,7 +101,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.PINK, City.PICCADILLY_CIRCUS, City.BUCKINGHAM_PALACE, 2),
                 createRouteVisual(Colour.BLUE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,10),
                 createRouteVisual(Colour.ORANGE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,-10),
-                createLandmarkRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2, "POINTS_OR_CARDS"),
+                createLandmarkRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2, LandmarkEffect.POINTS_OR_CARDS),
                 createRouteVisual(Colour.BLUE, City.WATERLOO, City.BIG_BEN, 1),
                 createFerryRouteVisual(Colour.MULTI, City.WATERLOO, City.TRAFALGAR_SQUARE, 2,2),
                 createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 2),
@@ -114,7 +115,7 @@ public class MapPanel extends JPanel {
                 createFerryRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3,2),
                 createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3,10),
                 createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3,-10),
-                createLandmarkRouteVisual(Colour.BLUE, City.TOWER_OF_LONDON, City.BRICK_LANE, 3, "STEAL_CARD"),
+                createLandmarkRouteVisual(Colour.BLUE, City.TOWER_OF_LONDON, City.BRICK_LANE, 3, LandmarkEffect.STEAL_CARD),
                 createRouteVisual(Colour.BLACK, City.ELEPHANT_CASTLE, City.TOWER_OF_LONDON, 4),
                 createRouteVisual(Colour.ORANGE, City.BRICK_LANE, City.ST_PAULS, 3),
                 createRouteVisual(Colour.MULTI, City.ST_PAULS, City.GLOBE_THEATRE, 1,10),
@@ -356,7 +357,7 @@ public class MapPanel extends JPanel {
             City cityA,
             City cityB,
             int length,
-            String effect
+            LandmarkEffect effect
     ) {
         RouteVisual routeVisual =
                 createRouteVisual(colour, cityA, cityB, length);
