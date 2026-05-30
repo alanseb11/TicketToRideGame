@@ -4,7 +4,7 @@ import backend.City;
 import backend.Colour;
 import backend.Route;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -15,10 +15,12 @@ public class MapPanel extends JPanel {
     private final GameController controller;
     private HashMap<City, Point> cityPositions;
     private RouteVisual[] routeVisuals;
+    private Image locomotiveIcon;
 
     public MapPanel(GameController controller) {
         this.controller = controller;
         setBackground(new Color(230, 220, 190));
+        locomotiveIcon = new ImageIcon("src/resources/locomotive_18x12.png").getImage();
         createCityPositions();
         createRouteVisuals();
         setupMouseListener();
@@ -98,7 +100,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.ORANGE, City.PICCADILLY_CIRCUS, City.TRAFALGAR_SQUARE, 1,-10),
                 createRouteVisual(Colour.GREEN, City.BUCKINGHAM_PALACE, City.BIG_BEN, 2),
                 createRouteVisual(Colour.BLUE, City.WATERLOO, City.BIG_BEN, 1),
-                createRouteVisual(Colour.MULTI, City.WATERLOO, City.TRAFALGAR_SQUARE, 2),
+                createFerryRouteVisual(Colour.MULTI, City.WATERLOO, City.TRAFALGAR_SQUARE, 2,2),
                 createRouteVisual(Colour.MULTI, City.BUCKINGHAM_PALACE, City.TRAFALGAR_SQUARE, 2),
                 createRouteVisual(Colour.MULTI, City.TRAFALGAR_SQUARE, City.BIG_BEN, 1),
 
@@ -107,7 +109,7 @@ public class MapPanel extends JPanel {
                 createRouteVisual(Colour.ORANGE, City.WATERLOO, City.ELEPHANT_CASTLE, 2),
                 createFerryRouteVisual(Colour.PINK, City.WATERLOO, City.GLOBE_THEATRE, 2, 1),
                 createRouteVisual(Colour.GREEN, City.GLOBE_THEATRE, City.ELEPHANT_CASTLE, 2),
-                createRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3),
+                createFerryRouteVisual(Colour.MULTI, City.GLOBE_THEATRE, City.TOWER_OF_LONDON, 3,2),
                 createRouteVisual(Colour.PINK, City.ST_PAULS, City.TOWER_OF_LONDON, 3,10),
                 createRouteVisual(Colour.YELLOW, City.ST_PAULS, City.TOWER_OF_LONDON, 3,-10),
                 createRouteVisual(Colour.BLUE, City.BRICK_LANE, City.TOWER_OF_LONDON, 3),
@@ -218,13 +220,13 @@ public class MapPanel extends JPanel {
                 if (route.isFerry()
                         && i < route.getRequiredLocomotives()) {
 
-                    g2.setColor(Color.WHITE);
-                    g2.setFont(new Font("Arial", Font.BOLD, 14));
-
-                    g2.drawString(
-                            "🚂",
-                            segment.x + 7,
-                            segment.y + 12
+                    g2.drawImage(
+                            locomotiveIcon,
+                            segment.x + 8,
+                            segment.y + 1,
+                            18,
+                            12,
+                            null
                     );
                 }
 

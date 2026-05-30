@@ -78,10 +78,8 @@ public class Route{
         // Player may only claim if they have enough trains to place along the route
         if (player.getBuses() >= length) {
             // If the route has a twin, and it has been claimed. Cannot claim this one.
-            if (doubleRoute != null) {
-                if (doubleRoute.owner != null) {
-                    return  null;
-                }
+            if (doubleRoute != null && doubleRoute.owner != null) {
+                return null;
             } else {
                 // If the path is grey (any colour set can claim), use first set with enough
                 // cards to claim the route
@@ -145,40 +143,92 @@ public class Route{
             return null;
         }
 
+        int locomotivesHeld = transportCards.get(Colour.MULTI);
+        int locomotivesUsed = Math.min(locomotivesHeld, requiredLocomotives);
+        int missingLocomotives = requiredLocomotives - locomotivesUsed;
+
+        if (locomotivesUsed > 0) {
+            cardsToUse.put(Colour.MULTI, locomotivesUsed);
+        }
+
         int normalCardsRequired = length - requiredLocomotives;
 
-        int locomotiveCards = transportCards.get(Colour.MULTI);
-        int sameColourCards = transportCards.get(colour);
+        int sameColourCards = colour == Colour.MULTI ? 0 : transportCards.get(colour);
+        int normalColourUsed = Math.min(sameColourCards, normalCardsRequired);
 
-        if (locomotiveCards < requiredLocomotives) {
+        if (normalColourUsed > 0) {
+            cardsToUse.put(colour, normalColourUsed);
+        }
+
+        int normalShortage = normalCardsRequired - normalColourUsed;
+
+        int remainingLocomotives = locomotivesHeld - locomotivesUsed;
+        int wildLocomotivesUsed = Math.min(remainingLocomotives, normalShortage);
+
+        if (wildLocomotivesUsed > 0) {
+            cardsToUse.put(
+                    Colour.MULTI,
+                    cardsToUse.getOrDefault(Colour.MULTI, 0) + wildLocomotivesUsed
+            );
+        }
+
+        normalShortage -= wildLocomotivesUsed;
+
+        if (normalShortage > 0) {
             return null;
         }
 
-        cardsToUse.put(Colour.MULTI, requiredLocomotives);
+        if (missingLocomotives > 0) {
+            int substituteCardsNeeded = missingLocomotives * 3;
 
-        if (sameColourCards >= normalCardsRequired) {
-            if (normalCardsRequired > 0) {
-                cardsToUse.put(colour, normalCardsRequired);
+            if (!addSubstituteCardsForMissingLocomotives(
+                    transportCards,
+                    cardsToUse,
+                    substituteCardsNeeded
+            )) {
+                return null;
             }
-
-            return cardsToUse;
         }
 
-        int colourShortage = normalCardsRequired - sameColourCards;
-        int remainingLocomotives = locomotiveCards - requiredLocomotives;
-
-        if (remainingLocomotives >= colourShortage) {
-            if (sameColourCards > 0) {
-                cardsToUse.put(colour, sameColourCards);
-            }
-
-            cardsToUse.put(Colour.MULTI, requiredLocomotives + colourShortage);
-            return cardsToUse;
-        }
-
-        return null;
+        return cardsToUse;
     }
 
+    private boolean addSubstituteCardsForMissingLocomotives(
+            HashMap<Colour, Integer> transportCards,
+            HashMap<Colour, Integer> cardsToUse,
+            int substituteCardsNeeded
+    ) {
+        int remainingNeeded = substituteCardsNeeded;
+
+        for (Colour cardColour : transportCards.keySet()) {
+            if (cardColour == Colour.MULTI) {
+                continue;
+            }
+
+            int cardsHeld = transportCards.get(cardColour);
+            int alreadyUsed = cardsToUse.getOrDefault(cardColour, 0);
+            int availableCards = cardsHeld - alreadyUsed;
+
+            if (availableCards <= 0) {
+                continue;
+            }
+
+            int cardsUsed = Math.min(availableCards, remainingNeeded);
+
+            cardsToUse.put(
+                    cardColour,
+                    cardsToUse.getOrDefault(cardColour, 0) + cardsUsed
+            );
+
+            remainingNeeded -= cardsUsed;
+
+            if (remainingNeeded == 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
     /**
      * Getter method for Route colour
      *
