@@ -132,24 +132,33 @@ This document contains:
 ```text
 src/
  ├── backend/
+ │    ├── City.java
+ │    ├── Colour.java
+ │    ├── Deck.java
+ │    ├── DestinationTicket.java
+ │    ├── DestinationTicketCardDeck.java
  │    ├── Game.java
- │    ├── Player.java
- │    ├── Route.java
  │    ├── GameSaveManager.java
  │    ├── LandmarkEffect.java
- │    └── ...
+ │    ├── Player.java
+ │    ├── Route.java
+ │    ├── TransportationDeck.java
+ │    └── TransportCard.java
  │
  ├── frontend/
- │    ├── GameFrame.java
- │    ├── GameController.java
- │    ├── MapPanel.java
  │    ├── ActionPanel.java
- │    └── Main.java
+ │    ├── GameController.java
+ │    ├── GameDialogService.java
+ │    ├── GameFrame.java
+ │    ├── Main.java
+ │    ├── MapPanel.java
+ │    ├── PlayerInfoPanel.java
+ │    ├── RouteVisual.java
+ │    └── StartScreen.java
  │
  └── resources/
-      ├── ferry icons
-      ├── landmark icons
-      └── graphical assets
+      ├── locomotive_18x12.png
+      └── star.png
 ```
 
 ---
