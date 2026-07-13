@@ -1,129 +1,424 @@
-# Ticket To Ride London – Sprint 3
+# Ticket to Ride London
 
-**Author:** Alan Sebastian
-**Student ID:** 33855137
+**Author:** Alan Sebastian  
+**Language:** Java  
+**UI Framework:** Java Swing  
+**Java Version:** Java 17  
 
 ## Project Overview
 
-This project is a Java Swing implementation of **Ticket To Ride London** developed for Sprint 3.
+This project is a desktop implementation of **Ticket to Ride London**, developed in Java using Swing.
 
-The project extends the previous implementation through three gameplay extensions:
+The application allows two players to compete by collecting transport cards, claiming routes between London landmarks, completing destination tickets, and earning points.
 
-1. **Required Extension – Ferry Routes**
-   Routes requiring locomotive cards with substitution rules.
+The project was developed over multiple sprints, beginning with the core gameplay system and progressively adding graphical improvements, save/load functionality, ferry routes, landmark routes, testing, documentation, and software design refinements.
 
-2. **Pick-From-The-List Extension – Save / Load System**
-   Allows players to save an active game and restore a previous game state.
-
-3. **Self-Defined Extension – Landmark Routes**
-   Special routes that trigger unique gameplay effects and player decisions.
+The final version demonstrates object-oriented programming, event-driven GUI development, modular software architecture, persistence, automated testing, and iterative development using Agile and Scrum practices.
 
 ---
 
-## Sprint 3 Features
+## Core Gameplay
+
+The game supports the main Ticket to Ride gameplay flow:
+
+1. Players enter their names and select their colours.
+2. Each player receives transport cards and destination tickets.
+3. Players take turns performing actions.
+4. Players may:
+   - Draw transport cards
+   - Draw destination tickets
+   - Claim routes
+   - Save the current game
+   - Load a previously saved game
+5. Players earn points by claiming routes and completing destination tickets.
+6. The game tracks player scores, cards, routes, buses, and turn information.
+
+---
+
+## Main Features
+
+### Player Setup
+
+The game begins with a start screen where two players can:
+
+- Enter their names
+- Select player colours
+- Start a new game
+- Load a saved game
+
+Player information is displayed throughout the game, including:
+
+- Current score
+- Remaining buses
+- Transport cards
+- Destination tickets
+- Current player turn
+
+---
+
+### Transport Card System
+
+Players collect transport cards used to claim routes.
+
+The game includes:
+
+- Multiple card colours
+- Locomotive (`MULTI`) cards
+- Card drawing from the transport deck
+- Card validation when claiming routes
+- Support for locomotive substitution rules
+
+---
+
+### Destination Tickets
+
+Destination tickets provide players with objectives requiring them to connect two London locations.
+
+The system supports:
+
+- Initial destination ticket selection
+- Drawing additional destination tickets
+- Storing tickets per player
+- Restoring tickets when loading a saved game
+- Tracking ticket ownership during gameplay
+
+---
+
+### Route Claiming
+
+Players can select and claim routes displayed on the London map.
+
+Route claiming includes:
+
+- Route colour requirements
+- Route length requirements
+- Player card validation
+- Bus availability validation
+- Score calculation
+- Visual route ownership updates
+- Prevention of invalid or duplicate claims
+
+Once claimed, a route is visually updated using the claiming player's colour.
+
+---
+
+### Interactive London Map
+
+The game board is rendered using Java Swing.
+
+The map includes:
+
+- London landmarks and locations
+- Routes between cities
+- Multi-segment route graphics
+- Route highlighting
+- Player ownership colours
+- Locomotive indicators for ferry routes
+- Star indicators for landmark routes
+
+The map communicates with the game controller to handle route selection and route claiming.
+
+---
+
+## Extended Gameplay Features
 
 ### Ferry Routes
 
-Ferry routes are identified by locomotive symbols displayed on the board.
+Ferry routes require players to use locomotive cards when claiming certain routes.
 
-To claim a ferry route, players must provide:
+Each ferry route specifies a required number of locomotive cards.
 
-* The required number of locomotive (`MULTI`) cards.
-* The normal coloured cards needed for the route.
+To claim a ferry route, the player must provide:
 
-If locomotives are missing, they may be substituted using **3 cards of the same colour per missing locomotive**.
+- The required locomotive cards
+- The remaining coloured cards needed for the route
+
+If a player does not have enough locomotives, the implementation supports substitution using:
+
+- Three cards of the same colour for each missing locomotive
+
+The route validates whether the player has a valid card combination before allowing the claim.
+
+Ferry routes are identified visually using locomotive icons.
 
 ---
 
-### Save / Load System
+### Save and Load System
 
-The game supports saving and loading gameplay state.
+The application includes a file-based save and load system.
 
-Saved information includes:
+A saved game stores:
 
-* Players
-* Transport cards
-* Destination tickets
-* Scores
-* Buses remaining
-* Claimed routes
-* Current turn information
+- Player names
+- Player colours
+- Player scores
+- Remaining buses
+- Transport card counts
+- Destination tickets
+- Claimed routes
+- Route ownership
+- Current player turn
 
-Loaded games restore the previous gameplay state directly from file.
+When a game is loaded, the application restores the complete gameplay state.
+
+Loaded games skip the normal new-game setup and continue from the saved position.
+
+Save and load functionality is managed by the `GameSaveManager` class.
 
 ---
 
 ### Landmark Routes
 
-Landmark routes are marked using star indicators on the map.
+Landmark routes are special routes that trigger additional gameplay effects when claimed.
 
-Implemented landmark effects:
+Landmark routes are displayed using star icons on the map.
 
-* **STEAL_CARD** — steals a random transport card from the opponent.
-* **POINTS_OR_CARDS** — allows the player to choose bonus points or additional transport cards.
-* **DETECTIVE_CHOICE** — provides an additional interactive gameplay decision.
+The system uses the `LandmarkEffect` enum to represent different effects.
 
----
+Implemented effects include:
 
-## Platform Requirements
+#### `STEAL_CARD`
 
-Tested using:
+Allows the current player to steal a transport card from the opposing player.
 
-* **Operating System:** Windows
-* **IDE:** IntelliJ IDEA
-* **Language:** Java
-* **Java Version:** Java 17
+#### `POINTS_OR_CARDS`
 
----
+Allows the player to choose between:
 
-## Running the Executable (.jar)
+- Receiving bonus points
+- Drawing additional transport cards
 
-1. Download and extract the provided executable zip file.
-2. Navigate to the executable folder.
-3. Run the provided `.jar` file.
+#### `EXTRA_DRAW`
 
-If double-clicking does not launch the program:
+Provides the player with an additional card draw.
 
-Open Command Prompt inside the executable directory and run:
-
-```text
-java -jar TicketToRideLondon.jar
-```
-
-Requirements:
-
-* Java Runtime Environment (JRE) installed.
-* Java 17 or later recommended.
+Landmark effects are handled after a valid route claim.
 
 ---
 
-## Running from Source Code
+## Software Architecture
 
-1. Open the project in **IntelliJ IDEA**.
-2. Configure the project SDK to **Java 17**.
-3. Open the main entry class:
+The project follows a modular object-oriented structure separated into backend and frontend packages.
 
-```text
-frontend.Main
-```
+### Backend
 
-4. Run the `main()` method.
+The backend contains the game model and gameplay rules.
+
+Responsibilities include:
+
+- Player state
+- Cards and decks
+- Destination tickets
+- Routes
+- Scores
+- Route validation
+- Ferry route logic
+- Landmark effects
+- Save and load functionality
+
+### Frontend
+
+The frontend contains the Java Swing interface and user interaction logic.
+
+Responsibilities include:
+
+- Start screen
+- Main game window
+- Map rendering
+- Action buttons
+- Player information panels
+- Dialogs
+- Route selection
+- Status and error messages
 
 ---
 
-## Creating the Executable from Source
+## Design Patterns and Principles
 
-Detailed instructions for creating the executable `.jar` file using IntelliJ are provided in the accompanying PDF:
+The project applies several software engineering concepts.
 
-**CreatingExecutableInstructionsAlanS.pdf**
+### Object-Oriented Programming
 
-This document contains:
+The implementation uses:
 
-* Artifact configuration
-* JAR creation steps
-* Main class selection
-* Build artifact process
-* Output directory setup
+- Encapsulation
+- Inheritance where appropriate
+- Polymorphism
+- Interfaces
+- Composition
+- Enumerations
+
+### SOLID Principles
+
+The design was improved to separate responsibilities between classes.
+
+Examples include:
+
+- `GameSaveManager` handles game persistence
+- `GameDialogService` handles user dialogs
+- `MapPanel` handles map rendering
+- `Route` handles route-specific validation
+- `GameController` coordinates gameplay and UI updates
+
+### Separation of Concerns
+
+The game separates:
+
+- Business logic
+- User interface logic
+- Persistence
+- Visual rendering
+- Dialog handling
+
+### Enum-Based Design
+
+The `LandmarkEffect` enum replaces string-based effect values, improving type safety and maintainability.
+
+---
+
+## Key Classes
+
+### `GameController`
+
+Coordinates gameplay actions and communication between the user interface and backend model.
+
+Responsibilities include:
+
+- Drawing cards
+- Claiming routes
+- Ending turns
+- Activating landmark effects
+- Updating player information
+- Updating status messages
+- Coordinating save/load operations
+
+### `Player`
+
+Stores player-specific game state, including:
+
+- Name
+- Colour
+- Score
+- Remaining buses
+- Transport cards
+- Destination tickets
+- Claimed routes
+
+### `Route`
+
+Represents a connection between two London locations.
+
+A route stores:
+
+- Start city
+- End city
+- Length
+- Colour
+- Claimed state
+- Owning player
+- Ferry requirements
+- Landmark effect
+
+The class also performs route validation.
+
+### `MapPanel`
+
+Draws the London map and route visuals.
+
+Responsibilities include:
+
+- Rendering routes
+- Displaying route ownership
+- Handling route selection
+- Drawing ferry locomotive icons
+- Drawing landmark star icons
+- Locating routes between cities
+
+### `GameSaveManager`
+
+Serialises and restores game state using local save files.
+
+### `GameDialogService`
+
+Handles gameplay dialogs, including:
+
+- Destination ticket selection
+- Error messages
+- Landmark choices
+- Gameplay notifications
+
+### `RouteVisual`
+
+Stores the visual representation of a route, including its route object and graphical segments.
+
+---
+
+## Project Development
+
+The project was developed across three sprints.
+
+### Sprint 1 — Core Game Foundation
+
+Sprint 1 focused on building the base game architecture.
+
+Major work included:
+
+- Core backend classes
+- Player model
+- Transport cards and decks
+- Destination tickets
+- Route representation
+- Initial game controller
+- Basic Java Swing interface
+- London map layout
+- Initial route claiming
+- Player setup
+- Turn management
+
+---
+
+### Sprint 2 — Gameplay and Interface Improvements
+
+Sprint 2 expanded the core implementation.
+
+Major work included:
+
+- Improved route selection
+- Player information panels
+- Action controls
+- Destination ticket interactions
+- Improved map rendering
+- Status messages
+- Route ownership display
+- Backend testing
+- Updated class design
+- UML documentation
+- Improved communication between frontend and backend
+
+---
+
+### Sprint 3 — Extensions and Refactoring
+
+Sprint 3 introduced additional gameplay extensions and software design improvements.
+
+Major additions included:
+
+- Ferry routes
+- Save/load system
+- Landmark routes
+- Locomotive route indicators
+- Landmark star indicators
+- Game state restoration
+- Destination ticket persistence
+- Claimed route persistence
+- Executable JAR creation
+- Refactoring of controller responsibilities
+- `GameDialogService`
+- `GameSaveManager`
+- `LandmarkEffect` enum
+- Updated UML diagrams
+- Design rationale
+- Anti-pattern analysis and refactoring
 
 ---
 
@@ -159,27 +454,3 @@ src/
  └── resources/
       ├── locomotive_18x12.png
       └── star.png
-```
-
----
-
-## Additional Notes
-
-* The application is implemented as a standalone Java Swing program.
-* No external libraries or servers are required.
-* Custom graphical assets are used for ferry and landmark visual indicators.
-* Save files are generated locally through the save/load system.
-
----
-
-## Repository Contents
-
-This repository includes:
-
-* Complete Sprint 3 source code
-* Updated UML diagram
-* Design rationale document
-* Supplementary documentation
-* Executable creation instructions PDF
-* README documentation
-# FIT3077 Repository
